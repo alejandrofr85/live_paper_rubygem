@@ -19,7 +19,7 @@ Or install it yourself as:
 
 ## Register with the Live Paper Service
 
-In order to obtain access credentials visit https://link.livepaperdeveloper.com
+In order to obtain access credentials register here:  https://link.livepaperdeveloper.com
 
 ## Usage
 
@@ -28,7 +28,7 @@ In order to obtain access credentials visit https://link.livepaperdeveloper.com
 Live Paper gem requires an authentication hash with :id and :secret. Obtain your credentials from the registration link above.
 
 ```ruby
-lp = LivePaper.new {id: "your client id", secret: "your client secret"}
+lp = LivePaper.auth id: "your client id", secret: "your client secret"
 ```
 
 
