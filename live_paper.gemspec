@@ -10,7 +10,7 @@ Gem::Specification.new do |spec|
   spec.summary       = %q{Ruby interface to the Live Paper service by HP.}
   spec.description   = %q{Ruby interface to use the Live Paper service by HP for creating watermarked images, mobile-friendly shortened URLs, and QR codes.}
 
-  spec.homepage      = ""
+  spec.homepage      = "https://github.com/IPGPTP/live_paper_rubygem"
   spec.license       = "MIT"
 
   spec.files         = `git ls-files -z`.split("\x0")
