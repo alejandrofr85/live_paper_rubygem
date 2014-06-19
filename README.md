@@ -2,6 +2,8 @@
 
 Provides a ruby interface to the Live Paper service by HP for creating watermarked images, QR codes, and mobile-friendly shortened URLs.
 
+[![Gem Version](https://badge.fury.io/rb/live_paper.svg)](http://badge.fury.io/rb/live_paper)
+
 
 ## Installation
 
