@@ -89,9 +89,9 @@ module LivePaper
     def trigger(type="shorturl", options={})
       body = {
           trigger: {
-              name: "foo",
+              name: "trigger",
               type: type,
-              expiryDate: Time.now + (365 * 24 * 60 *60)
+              expiryDate: Time.now + (365 * 24 * 60 * 60)
           }.merge(options)
       }
       create_resource('trigger', body)
@@ -100,7 +100,7 @@ module LivePaper
     def url_payoff(dest)
       body = {
           payoff: {
-              name: "foo",
+              name: "payoff",
               URL: dest
           }
       }
@@ -110,7 +110,7 @@ module LivePaper
     def link(trigger, payoff)
       body = {
           link: {
-              name: "mud",
+              name: "link",
               payoffId: payoff["id"],
               triggerId: trigger["id"]
           }
