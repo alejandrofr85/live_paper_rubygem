@@ -34,13 +34,8 @@ module LivePaper
     def shorten(dest)
       #returns shortened url
       trig = trigger "shorturl"
-      puts "Trigger: #{trig}"
-
       payoff = url_payoff dest
-      puts "Payoff: #{payoff}"
-
-      l = link(trig, payoff)
-      puts "Link: #{l}"
+      link(trig, payoff)
 
       trig["link"].select { |item| item["rel"] == "shortURL" }.first["href"]
     end
@@ -48,32 +43,20 @@ module LivePaper
     def qr_bytes(dest)
       #returns shortened url
       trig = trigger "qrcode"
-      puts "Trigger: #{trig}"
-
       payoff = url_payoff dest
-      puts "Destination: #{dest}"
-
-      l = link(trig, payoff)
-      puts "Link: #{l}"
+      link(trig, payoff)
 
       img_loc = trig["link"].select { |item| item["rel"] == "image" }.first["href"]
-
       resp = RestClient.get(img_loc, {Authorization: api_headers[:Authorization], Accept: 'image/png'})
       resp.body
     end
 
     def watermark_bytes(dest, image_url)
       image = upload_image image_url
-      puts "Source Image: #{image}"
 
       trig = trigger "watermark", watermark: {imageURL: image, resolution: "75", strength: "10"}
-      puts "\nTrigger: #{trig}"
-
       payoff = url_payoff dest
-      puts "\nDestination: #{dest}"
-
-      l = link(trig, payoff)
-      puts "\nLink: #{l}"
+      link(trig, payoff)
 
       img_loc = trig["link"].select { |item| item["rel"] == "image" }.first["href"]
       resp = RestClient.get(img_loc, Authorization: api_headers[:Authorization])
@@ -85,7 +68,6 @@ module LivePaper
 
     private
     def upload_image(img)
-      puts "Upload Image #{img}"
       uri='https://storage.livepaperapi.com/objects/files'
       # return the original img uri if it is LPP storage
       if img.include? uri
