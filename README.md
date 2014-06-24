@@ -30,7 +30,7 @@ In order to obtain access credentials register here:  https://link.livepaperdeve
 Live Paper gem requires an authentication hash with :id and :secret. Obtain your credentials from the registration link above.
 
 ```ruby
-lp = LivePaper.auth id: "your client id", secret: "your client secret"
+lp = LivePaper.auth 'id': "your client id", 'secret': "your client secret"
 ```
 
 
@@ -54,8 +54,8 @@ qr_bytes = lp.qr_bytes('http://www.amazon.com')
 
 ```ruby
 wm_bytes = lp.watermark_bytes("http://www.hp.com",
-                              "https://www.google.com/images/srpr/logo11w.png")
-File.open("watermark.jpg", "w") { |f| f.write(wm_bytes) }
+                              "http://www.letsstartsmall.com/ITSE2313_WebAuthoring/images/unit3/jpg_example1.jpg")
+File.open("watermark.jpg", "w:UTF-8") { |f| f.write(wm_bytes.force_encoding("UTF-8")) }
 ```
 
 > Note: Version 1 of the API only supports returning image bytes. Version 2 may host publicly accessible images.
