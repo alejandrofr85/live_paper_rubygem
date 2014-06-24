@@ -135,7 +135,6 @@ module LivePaper
       end
 
       body = JSON.parse(response.body)
-      puts "Token: #{body}"
       @token=body["accessToken"]
     end
 
