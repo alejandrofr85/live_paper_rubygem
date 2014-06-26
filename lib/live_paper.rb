@@ -122,7 +122,7 @@ module LivePaper
       uri = "#{LP_API_HOST}/auth/token"
       body = "grant_type=client_credentials&scope=all"
 
-      basic_auth = Base64.strict_encode64("#{auth['id']}:#{auth['secret']}")
+      basic_auth = Base64.strict_encode64("#{auth[:id]}:#{auth[:secret]}")
 
       begin
         response = RestClient.post uri, body,
