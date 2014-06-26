@@ -30,7 +30,7 @@ In order to obtain access credentials register here:  https://link.livepaperdeve
 Live Paper gem requires an authentication hash with :id and :secret. Obtain your credentials from the registration link above.
 
 ```ruby
-lp = LivePaper.auth 'id': "your client id", 'secret': "your client secret"
+lp = LivePaper.auth 'id' => "your client id", 'secret' => "your client secret"
 ```
 
 
