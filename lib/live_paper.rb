@@ -1,4 +1,4 @@
-require "live_paper/*"
+require "live_paper/version"
 require 'base64'
 require 'rest-client'
 
