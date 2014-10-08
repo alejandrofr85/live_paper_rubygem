@@ -1,4 +1,4 @@
-require "live_paper/version"
+require "live_paper/*"
 require 'base64'
 require 'rest-client'
 
@@ -68,7 +68,7 @@ module LivePaper
 
     private
     def upload_image(img)
-      uri='https://storage.livepaperapi.com/objects/files'
+      uri='https://storage.livepaperapi.com/objects/v1/files'
       # return the original img uri if it is LPP storage
       if img.include? uri
         return img
