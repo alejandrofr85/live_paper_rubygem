@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe LivePaper::Trigger do
+describe LivePaper::Link do
   before do
     stub_request(:post, /.*livepaperapi.com\/auth\/token.*/).to_return(:body => lpp_auth_response_json, :status => 200)
     stub_request(:post, LivePaper::Link.api_url).to_return(:body => lpp_link_response_json, :status => 200)

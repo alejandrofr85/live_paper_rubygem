@@ -15,6 +15,10 @@ module LivePaper
       authorize(auth)
     end
 
+    def say_hi
+      "hello"
+    end
+
     def smart_link(dest, image=nil)
       uber = {}
       uber[:short] = shorten dest
