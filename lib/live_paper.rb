@@ -1,6 +1,5 @@
 require "live_paper/base_object"
 require "live_paper/http_client"
-require "live_paper/image"
 require "live_paper/link"
 require "live_paper/loggable"
 require "live_paper/payoff"
@@ -8,6 +7,7 @@ require "live_paper/trigger"
 require "live_paper/version"
 require 'base64'
 require 'rest-client'
+require 'json'
 
 module LivePaper
 
@@ -19,10 +19,9 @@ module LivePaper
 
   class LivePaperSession
     def initialize(auth)
-      authorize(auth)
-    end
+      $lpp_basic_auth = Base64.strict_encode64("#{auth[:id]}:#{auth[:secret]}")
 
-    attr_accessor(:basic_auth)
+    end
 
     def say_hi
       "hello"
@@ -129,26 +128,6 @@ module LivePaper
           }
       }
       create_resource('link', body)
-    end
-
-    def authorize(auth)
-      self.basic_auth = Base64.strict_encode64("#{auth[:id]}:#{auth[:secret]}")
-
-      uri = "#{LP_API_HOST}/auth/token"
-      body = "grant_type=client_credentials&scope=all"
-
-      begin
-        response = RestClient.post uri, body,
-                                   :content_type => 'application/x-www-form-urlencoded',
-                                   Accept: 'application/json',
-                                   Authorization: "Basic #{self.basic_auth}"
-      rescue Exception => e
-        puts "Exception!"
-        puts e.response
-      end
-
-      body = JSON.parse(response.body)
-      @token=body["accessToken"]
     end
 
     def api_headers
