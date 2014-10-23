@@ -22,11 +22,11 @@ describe LivePaper::Trigger do
     end
 
     it 'should map the watermark attribute.' do
-      @trigger.watermark.should == @data[:watermark]
+      expect(@trigger.watermark).to eq @data[:watermark]
     end
 
     it 'should map the subscription attribute.' do
-      @trigger.subscription.should == @data[:subscription]
+      expect(@trigger.subscription).to eq @data[:subscription]
     end
   end
 
@@ -75,22 +75,22 @@ describe LivePaper::Trigger do
     end
 
     it 'should return a Trigger object.' do
-      @trigger.should be_a LivePaper::Trigger
+      expect(@trigger.class).to eq LivePaper::Trigger
     end
 
     it 'should map the id attribute.' do
-      @trigger.id.should == 'trigger_id'
+      expect(@trigger.id).to eq 'trigger_id'
     end
     it 'should map the name attribute.' do
-      @trigger.name.should == 'name'
+      expect(@trigger.name).to eq 'name'
     end
 
     it 'should map the watermark attribute.' do
-      @trigger.watermark.should == 'watermark'
+      expect(@trigger.watermark).to eq 'watermark'
     end
 
     it 'should map the subscription attribute.' do
-      @trigger.subscription.should == 'subscription'
+      expect(@trigger.subscription).to eq 'subscription'
     end
   end
 
@@ -101,10 +101,10 @@ describe LivePaper::Trigger do
       end
 
       it 'should return the requested trigger.' do
-        @trigger.id.should == 'trigger_id'
-        @trigger.name.should == 'name'
-        @trigger.watermark.should == 'watermark'
-        @trigger.subscription.should == 'subscription'
+        expect(@trigger.id).to eq 'trigger_id'
+        expect(@trigger.name).to eq 'name'
+        expect(@trigger.watermark).to eq 'watermark'
+        expect(@trigger.subscription).to eq 'subscription'
       end
     end
 
@@ -114,7 +114,7 @@ describe LivePaper::Trigger do
       end
 
       it 'should return nil.' do
-        LivePaper::Trigger.find('trigger_not_existent').should be_nil
+        expect(LivePaper::Trigger.find('trigger_not_existent')).to eq nil
       end
     end
   end
@@ -125,7 +125,7 @@ describe LivePaper::Trigger do
     end
 
     it 'should return the watermark image data.' do
-      @trigger.download_watermark.should == 'watermark_data'
+      expect(@trigger.download_watermark).to eq 'watermark_data'
     end
   end
 end
