@@ -1,3 +1,10 @@
+require "live_paper/base_object"
+require "live_paper/http_client"
+require "live_paper/image"
+require "live_paper/link"
+require "live_paper/loggable"
+require "live_paper/payoff"
+require "live_paper/trigger"
 require "live_paper/version"
 require 'base64'
 require 'rest-client'
@@ -14,6 +21,8 @@ module LivePaper
     def initialize(auth)
       authorize(auth)
     end
+
+    attr_accessor(:basic_auth)
 
     def say_hi
       "hello"
@@ -73,7 +82,7 @@ module LivePaper
     private
     def upload_image(img)
       uri='https://storage.livepaperapi.com/objects/v1/files'
-      # return the original img uri if it is LPP storage
+      # return the original img uri if it is LivePaper storage
       if img.include? uri
         return img
       end
@@ -123,16 +132,16 @@ module LivePaper
     end
 
     def authorize(auth)
+      self.basic_auth = Base64.strict_encode64("#{auth[:id]}:#{auth[:secret]}")
+
       uri = "#{LP_API_HOST}/auth/token"
       body = "grant_type=client_credentials&scope=all"
-
-      basic_auth = Base64.strict_encode64("#{auth[:id]}:#{auth[:secret]}")
 
       begin
         response = RestClient.post uri, body,
                                    :content_type => 'application/x-www-form-urlencoded',
                                    Accept: 'application/json',
-                                   Authorization: "Basic #{basic_auth}"
+                                   Authorization: "Basic #{self.basic_auth}"
       rescue Exception => e
         puts "Exception!"
         puts e.response
