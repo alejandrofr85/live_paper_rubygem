@@ -22,19 +22,19 @@ describe LivePaper::Payoff do
     end
 
     it 'should map the type attribute.' do
-      @payoff.type.should == @data[:type]
+      expect(@payoff.type).to eq @data[:type]
     end
 
     it 'should map the url attribute.' do
-      @payoff.url.should == @data[:url]
+      expect(@payoff.url).to eq @data[:url]
     end
 
     it 'should map the data_type attribute.' do
-      @payoff.data_type.should == @data[:data_type]
+      expect(@payoff.data_type).to eq @data[:data_type]
     end
 
     it 'should map the data attribute.' do
-      @payoff.data.should == @data[:data]
+      expect(@payoff.data).to eq @data[:data]
     end
   end
 
@@ -154,23 +154,23 @@ describe LivePaper::Payoff do
     end
 
     it 'should return a Payoff object.' do
-      @payoff.should be_a LivePaper::Payoff
+      expect(@payoff.class).to eq LivePaper::Payoff
     end
 
     it 'should map the id attribute.' do
-      @payoff.id.should == 'payoff_id'
+      expect(@payoff.id).to eq 'payoff_id'
     end
     it 'should map the name attribute.' do
-      @payoff.name.should == 'name'
+      expect(@payoff.name).to eq 'name'
     end
 
     it 'should map the url attribute.' do
-      @payoff.url.should == 'url'
+      expect(@payoff.url).to eq 'url'
     end
 
     context 'when the data is from a web payoff.' do
       it 'should map the payoff type attribute.' do
-        @payoff.type.should == LivePaper::Payoff::TYPE[:WEB]
+        expect(@payoff.type).to eq LivePaper::Payoff::TYPE[:WEB]
       end
     end
 
@@ -180,14 +180,14 @@ describe LivePaper::Payoff do
       end
 
       it 'should map the payoff type attribute.' do
-        @payoff.type.should == LivePaper::Payoff::TYPE[:RICH]
+        expect(@payoff.type).to eq LivePaper::Payoff::TYPE[:RICH]
       end
 
       it 'should map the data_type attribute.' do
-        @payoff.data_type.should == 'data_type'
+        expect(@payoff.data_type).to eq 'data_type'
       end
       it 'should map the data attribute.' do
-        @payoff.data.should == {field: 1}
+        expect(@payoff.data).to eq ({field: 1})
       end
     end
   end
@@ -199,9 +199,9 @@ describe LivePaper::Payoff do
       end
 
       it 'should return the requested payoff.' do
-        @payoff.id.should == 'payoff_id'
-        @payoff.name.should == 'name'
-        @payoff.url.should == 'url'
+        expect(@payoff.id).to eq 'payoff_id'
+        expect(@payoff.name).to eq 'name'
+        expect(@payoff.url).to eq 'url'
       end
 
     end
@@ -212,7 +212,7 @@ describe LivePaper::Payoff do
       end
 
       it 'should return nil.' do
-        LivePaper::Payoff.find('payoff_not_existent').should be_nil
+        expect(LivePaper::Payoff.find('payoff_not_existent')).to eq nil
       end
     end
   end
