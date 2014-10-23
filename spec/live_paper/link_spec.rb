@@ -22,15 +22,15 @@ describe LivePaper::Trigger do
     end
 
     it 'should map the analytics attribute.' do
-      @link.analytics.should == @data[:analytics]
+      expect(@link.analytics).to eq @data[:analytics]
     end
 
     it 'should map the trigger_id attribute.' do
-      @link.trigger_id.should == @data[:trigger_id]
+      expect(@link.trigger_id).to eq @data[:trigger_id]
     end
 
     it 'should map the payoff_id attribute.' do
-      @link.payoff_id.should == @data[:payoff_id]
+      expect(@link.payoff_id).to eq @data[:payoff_id]
     end
   end
 
@@ -74,27 +74,27 @@ describe LivePaper::Trigger do
     end
 
     it 'should return a Link object.' do
-      @link.should be_a LivePaper::Link
+      expect(@link.class).to eq LivePaper::Link
     end
 
     it 'should map the id attribute.' do
-      @link.id.should == 'link_id'
+      expect(@link.id).to eq 'link_id'
     end
 
     it 'should map the name attribute.' do
-      @link.name.should == 'name'
+      expect(@link.name).to eq 'name'
     end
 
     it 'should map the analytics attribute.' do
-      @link.analytics.should == 'analytics'
+      expect(@link.analytics).to eq 'analytics'
     end
 
     it 'should map the trigger_id attribute.' do
-      @link.trigger_id.should == 'trigger_id'
+      expect(@link.trigger_id).to eq 'trigger_id'
     end
 
     it 'should map the payoff_id attribute.' do
-      @link.payoff_id.should == 'payoff_id'
+      expect(@link.payoff_id).to eq 'payoff_id'
     end
   end
 
@@ -105,11 +105,11 @@ describe LivePaper::Trigger do
       end
 
       it 'should return the requested link.' do
-        @link.id.should == 'link_id'
-        @link.name.should == 'name'
-        @link.analytics.should == 'analytics'
-        @link.trigger_id.should == 'trigger_id'
-        @link.payoff_id.should == 'payoff_id'
+        expect(@link.id).to eq 'link_id'
+        expect(@link.name).to eq 'name'
+        expect(@link.analytics).to eq 'analytics'
+        expect(@link.trigger_id).to eq 'trigger_id'
+        expect(@link.payoff_id).to eq 'payoff_id'
       end
     end
 
@@ -119,7 +119,7 @@ describe LivePaper::Trigger do
       end
 
       it 'should return nil.' do
-        LivePaper::Link.find('link_not_existent').should be_nil
+        expect(LivePaper::Link.find('link_not_existent')).to eq nil
       end
     end
   end
@@ -136,7 +136,7 @@ describe LivePaper::Trigger do
       end
 
       it 'should return a Trigger Object.' do
-        @link.trigger.should be_a LivePaper::Trigger
+        expect(@link.trigger.class).to eq LivePaper::Trigger
       end
     end
 
@@ -147,7 +147,7 @@ describe LivePaper::Trigger do
       end
 
       it 'should return nil.' do
-        @link.trigger.should be_nil
+        expect(@link.trigger).to eq nil
       end
     end
   end
@@ -164,7 +164,7 @@ describe LivePaper::Trigger do
       end
 
       it 'should return a Payoff Object.' do
-        @link.payoff.should be_a LivePaper::Payoff
+        expect(@link.payoff.class).to eq LivePaper::Payoff
       end
     end
 
@@ -175,7 +175,7 @@ describe LivePaper::Trigger do
       end
 
       it 'should return nil.' do
-        @link.payoff.should be_nil
+        expect(@link.payoff).to eq nil
       end
     end
   end

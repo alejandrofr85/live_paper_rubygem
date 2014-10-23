@@ -6,7 +6,6 @@ module LivePaper
 
     def parse(data)
       data = JSON.parse(data, symbolize_names: true)[:link]
-      p data
       assign_attributes data
       @analytics = get_link_for data, 'analytics'
       self

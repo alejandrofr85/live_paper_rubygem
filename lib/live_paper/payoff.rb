@@ -12,7 +12,7 @@ module LivePaper
     def parse(data)
       data = JSON.parse(data, symbolize_names: true)[:payoff]
       assign_attributes(data)
-      send(data[:richPayoff].empty? ? :parse_webpayoff : :parse_richpayoff, data)
+      send(present?(data[:richPayoff]) ? :parse_richpayoff : :parse_webpayoff, data)
       self
     end
 
