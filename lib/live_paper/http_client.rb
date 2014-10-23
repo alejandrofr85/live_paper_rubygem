@@ -7,9 +7,7 @@ end
 module LivePaper
   module HttpClient
     LP_API_HOST="https://www.livepaperapi.com"
-
     AUTH_URL = "#{LP_API_HOST}/auth/token"
-
 
     def send_request(request, content_type = nil, body = nil)
       request['Content-type'] = content_type if content_type
@@ -46,7 +44,7 @@ module LivePaper
     end
 
     def request_access_token
-      request = http_request(AUTH_URL, "POST")
+      request = http_request(AUTH_URL, 'POST')
       request['Authorization'] = "Basic #{$lpp_basic_auth}"
       request['Content-Type'] = 'application/x-www-form-urlencoded'
       request.body = 'grant_type=client_credentials&scope=all'
@@ -72,7 +70,7 @@ module LivePaper
     private
     def set_http(uri)
       http_params = [uri.host, uri.port]
-      http_params.concat ENV['HTTP_PROXY'].gsub('http://', '').split(':') unless ENV['HTTP_PROXY'].empty?
+      http_params.concat ENV['HTTP_PROXY'].gsub('http://', '').split(':') unless ENV['HTTP_PROXY'].to_s.empty?
 
       @http = Net::HTTP.new(*http_params)
       @http.use_ssl = true
