@@ -16,7 +16,8 @@ module LivePaper
     end
 
     def trigger
-      @trigger ||= LivePaper::Trigger.find @trigger_id
+      #todo: need to get the right object created here!!!
+      @trigger ||= LivePaper::WmTrigger.find @trigger_id
     end
 
     def self.api_url

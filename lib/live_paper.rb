@@ -2,7 +2,9 @@ require "live_paper/base_object"
 require "live_paper/http_client"
 require "live_paper/link"
 require "live_paper/payoff"
-require "live_paper/trigger"
+require "live_paper/wm_trigger"
+require "live_paper/qr_trigger"
+require "live_paper/short_trigger"
 require "live_paper/version"
 require 'base64'
 require 'rest-client'
@@ -18,8 +20,10 @@ module LivePaper
 
   class LivePaperSession
     def initialize(auth)
+      #todo: tdd, verify hash
+      puts auth.to_yaml
       $lpp_basic_auth = Base64.strict_encode64("#{auth[:id]}:#{auth[:secret]}")
-
+      authorize #reqd for image_upload still
     end
 
     def say_hi
@@ -43,35 +47,26 @@ module LivePaper
     end
 
     def shorten(dest)
-      #returns shortened url
-      trig = trigger "shorturl"
-      payoff = url_payoff dest
-      link(trig, payoff)
-
-      trig["link"].select { |item| item["rel"] == "shortURL" }.first["href"]
+      t=ShortTrigger.create(name:'short trigger')
+      p=Payoff.create(name: 'name', type: Payoff::TYPE[:WEB], url: dest)
+      Link.create(payoff_id: p.id, trigger_id: t.id, name: "link")
+      t.short_url
     end
 
     def qr_bytes(dest)
-      #returns shortened url
-      trig = trigger "qrcode"
-      payoff = url_payoff dest
-      link(trig, payoff)
-
-      img_loc = trig["link"].select { |item| item["rel"] == "image" }.first["href"]
-      resp = RestClient.get(img_loc, {Authorization: api_headers[:Authorization], Accept: 'image/png'})
-      resp.body
+      t=QrTrigger.create(name:'QR code trigger')
+      p=Payoff.create(name: 'name', type: Payoff::TYPE[:WEB], url: dest)
+      Link.create(payoff_id: p.id, trigger_id: t.id, name: "link")
+      t.download_qrcode
     end
 
     def watermark_bytes(dest, image_url)
       image = upload_image image_url
 
-      trig = trigger "watermark", watermark: {imageURL: image, resolution: "75", strength: "10"}
-      payoff = url_payoff dest
-      link(trig, payoff)
-
-      img_loc = trig["link"].select { |item| item["rel"] == "image" }.first["href"]
-      resp = RestClient.get(img_loc, Authorization: api_headers[:Authorization])
-      resp.body
+      t=WmTrigger.create(name: 'watermark', watermark: {strength: 10, resolution: 75, imageURL: image})
+      p=Payoff.create(name: 'name', type: Payoff::TYPE[:WEB], url: dest)
+      Link.create(payoff_id: p.id, trigger_id: t.id, name: "link")
+      t.download_watermark
     rescue Exception => e
       puts "Exception!"
       puts e.response
@@ -97,36 +92,22 @@ module LivePaper
       end
     end
 
-    def trigger(type="shorturl", options={})
-      body = {
-          trigger: {
-              name: "trigger",
-              type: type,
-              expiryDate: Time.now + (365 * 24 * 60 * 60)
-          }.merge(options)
-      }
-      create_resource('trigger', body)
-    end
+    def authorize
+      uri = "#{LP_API_HOST}/auth/token"
+      body = "grant_type=client_credentials&scope=all"
 
-    def url_payoff(dest)
-      body = {
-          payoff: {
-              name: "payoff",
-              URL: dest
-          }
-      }
-      create_resource('payoff', body)
-    end
+      begin
+        response = RestClient.post uri, body,
+                                   :content_type => 'application/x-www-form-urlencoded',
+                                   Accept: 'application/json',
+                                   Authorization: "Basic #{$lpp_basic_auth}"
+      rescue Exception => e
+        puts "Exception!"
+        puts e.response
+      end
 
-    def link(trigger, payoff)
-      body = {
-          link: {
-              name: "link",
-              payoffId: payoff["id"],
-              triggerId: trigger["id"]
-          }
-      }
-      create_resource('link', body)
+      body = JSON.parse(response.body)
+      @token=body["accessToken"]
     end
 
     def api_headers
@@ -135,17 +116,5 @@ module LivePaper
        Accept: 'application/json'
       }
     end
-
-    def create_resource(resource, body)
-      uri= "https://www.livepaperapi.com/api/v1/#{resource}s"
-      response = RestClient.post uri, body.to_json, api_headers
-      JSON.parse(response.body)[resource]
-    rescue Exception => e
-      puts "Exception!"
-      puts e.response
-      nil
-    end
-
   end
-
 end

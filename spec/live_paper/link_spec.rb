@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe LivePaper::Trigger do
+describe LivePaper::WmTrigger do
   before do
     stub_request(:post, /.*livepaperapi.com\/auth\/token.*/).to_return(:body => lpp_auth_response_json, :status => 200)
     stub_request(:post, LivePaper::Link.api_url).to_return(:body => lpp_link_response_json, :status => 200)
@@ -126,8 +126,8 @@ describe LivePaper::Trigger do
 
   describe '#trigger' do
     before do
-      stub_request(:get, "#{LivePaper::Trigger.api_url}/trigger_id").to_return(:body => lpp_trigger_response_json, :status => 200)
-      stub_request(:get, "#{LivePaper::Trigger.api_url}/trigger_not_existent").to_return(:body => '{}', :status => 404)
+      stub_request(:get, "#{LivePaper::WmTrigger.api_url}/trigger_id").to_return(:body => lpp_trigger_response_json, :status => 200)
+      stub_request(:get, "#{LivePaper::WmTrigger.api_url}/trigger_not_existent").to_return(:body => '{}', :status => 404)
     end
 
     context 'the trigger_id attribute is from a valid trigger.' do
@@ -136,7 +136,7 @@ describe LivePaper::Trigger do
       end
 
       it 'should return a Trigger Object.' do
-        expect(@link.trigger.class).to eq LivePaper::Trigger
+        expect(@link.trigger.class).to eq LivePaper::WmTrigger
       end
     end
 

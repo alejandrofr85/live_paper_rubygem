@@ -1,24 +1,16 @@
 require_relative 'base_object'
 
 module LivePaper
-  class Trigger < BaseObject
-    attr_accessor :watermark, :subscription
+  class WmTrigger < BaseObject
+    attr_accessor :watermark, :subscription, :wm_url
     WATERMARK_RESOLUTION = 75
     WATERMARK_STRENGTH = 10
-    # SUBSCRIPTION = {
-    #   week: 1.week,
-    #   twoweeks: 2.week,
-    #   month: 1.month,
-    #   quarter: 3.months,
-    #   halfyear: 6.months,
-    #   year: 1.year
-    # }
     DEFAULT_SUBSCRIPTION = :month
-    DOWNLOAD_URL = "https://watermark.livepaperapi.com/watermark/v1/triggers"
 
     def parse(data)
       data = JSON.parse(data, symbolize_names: true)[:trigger]
       assign_attributes data
+      self.wm_url=data[:link].select { |item| item[:rel] == "image" }.first[:href]
       self
     end
 
@@ -27,8 +19,8 @@ module LivePaper
     end
 
     def download_watermark
-      Trigger.request_handling_auth("#{DOWNLOAD_URL}/#{@id}/image", 'GET') do |request|
-        response = Trigger.send_request(request)
+      WmTrigger.request_handling_auth(self.wm_url, 'GET') do |request|
+        response = WmTrigger.send_request(request)
         response.body.empty? ? nil : response.body
       end
     end
