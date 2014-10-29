@@ -2,12 +2,15 @@ require 'spec_helper'
 
 describe LivePaper::LivePaperSession do
 
-  describe '#say_hi' do
-    it 'should respond with greeting' do
-      allow_any_instance_of(LivePaper::LivePaperSession).to receive(:authorize).and_return(true)
+  describe '#shorten' do
+    pending
+  end
 
-      @lps=LivePaper::LivePaperSession.new(nil)
-      expect(@lps.say_hi).to eq("hello")
-    end
+  describe '#qr_bytes' do
+    pending
+  end
+
+  describe '#wm_bytes' do
+    pending
   end
 end

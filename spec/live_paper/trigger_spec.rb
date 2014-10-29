@@ -6,7 +6,7 @@ describe LivePaper::WmTrigger do
   before do
     stub_request(:post, /.*livepaperapi.com\/auth\/token.*/).to_return(:body => lpp_auth_response_json, :status => 200)
     stub_request(:post, LivePaper::WmTrigger.api_url).to_return(:body => lpp_trigger_response_json, :status => 200)
-    stub_request(:get, "#{LivePaper::WmTrigger::DOWNLOAD_URL}/id/image").to_return(:body => lpp_watermark_response, :status => 200)
+    stub_request(:get, 'https://fileapi/id/image').to_return(:body => lpp_watermark_response, :status => 200)
     stub_request(:get, "#{LivePaper::WmTrigger.api_url}/trigger_id").to_return(:body => lpp_trigger_response_json, :status => 200)
     stub_request(:get, "#{LivePaper::WmTrigger.api_url}/trigger_not_existent").to_return(:body => '{}', :status => 404)
 
@@ -124,6 +124,7 @@ describe LivePaper::WmTrigger do
   describe '#download_watermark' do
     before do
       @trigger = LivePaper::WmTrigger.new @data
+      @trigger.wm_url='https://fileapi/id/image'
     end
 
     it 'should return the watermark image data.' do

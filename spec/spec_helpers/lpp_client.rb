@@ -49,6 +49,7 @@ def lpp_trigger_response_json
     "id": "trigger_id",
     "name": "name",
     "watermark": "watermark",
+    "link": [{"rel":"image", "href": "https://fileapi/id/image"}],
     "subscription": "subscription"
   }
 }
