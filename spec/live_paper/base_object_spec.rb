@@ -127,6 +127,31 @@ describe LivePaper::BaseObject do
     end
   end
 
+  describe '#rel' do
+    before do
+      stub_unimplemented_methods
+            @data = {
+              name: 'name',
+              date_created: 'date_created',
+              date_modified: 'date_modified',
+              link: [
+                { :rel => "self", :href => "/api/v1/payoffs/payoff_id" },
+                { :rel => "analytics", :href => "/analytics/v1/payoffs/payoff_id" }
+              ]
+            }
+            @obj = LivePaper::BaseObject.create @data
+    end
+
+    it 'should return href for rel link' do
+      puts "obj is #{@obj.to_yaml}"
+      expect(@obj.rel('self')).to eq '/api/v1/payoffs/payoff_id'
+    end
+
+    it 'should return nil for unknown rel link' do
+      expect(@obj.rel('invalid')).to be_nil
+    end
+  end
+
   describe '#all_present?' do
     before do
       @all = [1, 2, {k: 'v'}, [1, 2]]

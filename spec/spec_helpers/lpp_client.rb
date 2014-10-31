@@ -27,14 +27,26 @@ def lpp_richpayoff_response_json
   "payoff": {
     "id": "payoff_id",
     "name": "name",
+    "dateCreated":"2014-10-07T20:57:01.083+0000",
+    "dateModified":"2014-10-07T20:57:01.083+0000",
+    "link":[
+      {
+        "rel":"self",
+        "href":"/api/v1/payoffs/payoff_id"
+      },
+      {
+        "rel":"analytics",
+        "href":"/analytics/v1/payoffs/payoff_id"
+      }
+    ],
     "richPayoff" : {
       "version": 1,
+      "public": {
+        "url": "url"
+      },
       "private": {
         "content-type": "data_type",
         "data": "#{Base64.encode64('{ "field": 1 }').gsub(/\n/,'')}"
-      },
-      "public": {
-        "url": "url"
       }
     }
   }

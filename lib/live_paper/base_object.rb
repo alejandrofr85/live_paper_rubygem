@@ -49,6 +49,10 @@ module LivePaper
       raise NotImplementedError
     end
 
+    def rel(key)
+      link.find { |obj| obj[:rel] == key }[:href] rescue nil
+    end
+
     protected
     def all_present?(array)
       array.all? { |e| present? e } rescue false
