@@ -62,9 +62,26 @@ def lpp_link_response_json
   "link": {
     "id": "link_id",
     "name": "name",
-    "triggerId": "trigger_id",
+    "dateCreated": "2014-04-08T08:16:25.723+0000",
+    "dateModified": "2014-04-08T08:16:25.723+0000",
+    "link": [{
+      "rel": "self",
+      "href": "self_url"
+    },
+    {
+      "rel": "analytics",
+      "href": "analytic_url"
+    },
+    {
+      "rel": "payoff",
+      "href": "payoff_url"
+    },
+    {
+      "rel": "trigger",
+      "href": "trigger_url"
+    }],
     "payoffId": "payoff_id",
-    "link": [{"rel":"analytics", "href": "analytics"}]
+    "triggerId": "trigger_id"
   }
 }
   RESPONSE

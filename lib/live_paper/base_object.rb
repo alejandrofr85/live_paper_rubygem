@@ -4,7 +4,7 @@ require 'json'
 module LivePaper
   class BaseObject
     extend HttpClient
-    attr_accessor :id, :name, :date_created, :date_modified
+    attr_accessor :id, :name, :date_created, :date_modified, :link
 
     def assign_attributes(data)
       data.each do |key, value|

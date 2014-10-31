@@ -2,12 +2,11 @@ require_relative 'base_object'
 
 module LivePaper
   class Link < BaseObject
-    attr_accessor :payoff_id, :trigger_id, :analytics
+    attr_accessor :payoff_id, :trigger_id
 
-    def parse(data)
-      data = JSON.parse(data, symbolize_names: true)[:link]
+    def parse(jsondata)
+      data = JSON.parse(jsondata, symbolize_names: true)[:link]
       assign_attributes data
-      @analytics = get_link_for data, 'analytics'
       self
     end
 
@@ -39,8 +38,8 @@ module LivePaper
       }
     end
 
-    def get_link_for(data, rel)
-      data[:link].find { |obj| obj[:rel] == rel }[:href] rescue ''
-    end
+    # def get_link_for(data, rel)
+    #   data[:link].find { |obj| obj[:rel] == rel }[:href] rescue ''
+    # end
   end
 end

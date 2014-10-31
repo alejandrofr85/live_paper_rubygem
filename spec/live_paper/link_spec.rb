@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe LivePaper::WmTrigger do
+describe LivePaper::Link do
   before do
     stub_request(:post, /.*livepaperapi.com\/auth\/token.*/).to_return(:body => lpp_auth_response_json, :status => 200)
     stub_request(:post, LivePaper::Link.api_url).to_return(:body => lpp_link_response_json, :status => 200)
@@ -10,7 +10,6 @@ describe LivePaper::WmTrigger do
     @data = {
       id: 'id',
       name: 'name',
-      analytics: 'analytics',
       trigger_id: 'trigger_id',
       payoff_id: 'payoff_id'
     }
@@ -19,10 +18,6 @@ describe LivePaper::WmTrigger do
   describe '#initialize' do
     before do
       @link = LivePaper::Link.new @data
-    end
-
-    it 'should map the analytics attribute.' do
-      expect(@link.analytics).to eq @data[:analytics]
     end
 
     it 'should map the trigger_id attribute.' do
@@ -85,8 +80,13 @@ describe LivePaper::WmTrigger do
       expect(@link.name).to eq 'name'
     end
 
-    it 'should map the analytics attribute.' do
-      expect(@link.analytics).to eq 'analytics'
+    it 'should map the link array attribute.' do
+      expect(@link.link).to be_a Array
+      expect(@link.link.size).to eq 4
+      expect(@link.link).to eq [{:rel=>"self", :href=>"self_url"},
+                                {:rel=>"analytics", :href=>"analytic_url"},
+                                {:rel=>"payoff", :href=>"payoff_url"},
+                                {:rel=>"trigger", :href=>"trigger_url"}]
     end
 
     it 'should map the trigger_id attribute.' do
@@ -107,7 +107,8 @@ describe LivePaper::WmTrigger do
       it 'should return the requested link.' do
         expect(@link.id).to eq 'link_id'
         expect(@link.name).to eq 'name'
-        expect(@link.analytics).to eq 'analytics'
+        expect(@link.link).to be_a Array
+        expect(@link.link.size).to eq 4
         expect(@link.trigger_id).to eq 'trigger_id'
         expect(@link.payoff_id).to eq 'payoff_id'
       end
