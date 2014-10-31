@@ -192,10 +192,10 @@ describe LivePaper::Payoff do
     end
   end
 
-  describe '.find' do
+  describe '.get' do
     context 'the requested payoff exists.' do
       before do
-        @payoff = LivePaper::Payoff.find('payoff_id')
+        @payoff = LivePaper::Payoff.get('payoff_id')
       end
 
       it 'should return the requested payoff.' do
@@ -208,11 +208,11 @@ describe LivePaper::Payoff do
 
     context 'the requested payoff does not exist or some error happened.' do
       it 'should not raise error.' do
-        expect { LivePaper::Payoff.find('payoff_not_existent') }.to_not raise_error
+        expect { LivePaper::Payoff.get('payoff_not_existent') }.to_not raise_error
       end
 
       it 'should return nil.' do
-        expect(LivePaper::Payoff.find('payoff_not_existent')).to eq nil
+        expect(LivePaper::Payoff.get('payoff_not_existent')).to eq nil
       end
     end
   end

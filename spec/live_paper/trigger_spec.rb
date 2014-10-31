@@ -96,10 +96,10 @@ describe LivePaper::WmTrigger do
     end
   end
 
-  describe '.find' do
+  describe '.get' do
     context 'the requested trigger exists.' do
       before do
-        @trigger = LivePaper::WmTrigger.find('trigger_id')
+        @trigger = LivePaper::WmTrigger.get('trigger_id')
       end
 
       it 'should return the requested trigger.' do
@@ -112,11 +112,11 @@ describe LivePaper::WmTrigger do
 
     context 'the requested trigger does not exist or some error happened.' do
       it 'should not raise error.' do
-        expect { LivePaper::WmTrigger.find('trigger_not_existent') }.to_not raise_error
+        expect { LivePaper::WmTrigger.get('trigger_not_existent') }.to_not raise_error
       end
 
       it 'should return nil.' do
-        expect(LivePaper::WmTrigger.find('trigger_not_existent')).to eq nil
+        expect(LivePaper::WmTrigger.get('trigger_not_existent')).to eq nil
       end
     end
   end

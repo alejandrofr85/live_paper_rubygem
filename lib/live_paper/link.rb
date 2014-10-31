@@ -11,12 +11,12 @@ module LivePaper
     end
 
     def payoff
-      @payoff ||= LivePaper::Payoff.find @payoff_id
+      @payoff ||= LivePaper::Payoff.get @payoff_id
     end
 
     def trigger
       #todo: need to get the right object created here!!!
-      @trigger ||= LivePaper::WmTrigger.find @trigger_id
+      @trigger ||= LivePaper::WmTrigger.get @trigger_id
     end
 
     def self.api_url
@@ -37,9 +37,5 @@ module LivePaper
         }
       }
     end
-
-    # def get_link_for(data, rel)
-    #   data[:link].find { |obj| obj[:rel] == rel }[:href] rescue ''
-    # end
   end
 end

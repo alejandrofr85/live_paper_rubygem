@@ -30,7 +30,7 @@ module LivePaper
       self
     end
 
-    def self.find(id)
+    def self.get(id)
       request_handling_auth("#{api_url}/#{id}", 'GET') do |request|
         response = send_request(request, 'application/json')
         parse response.body

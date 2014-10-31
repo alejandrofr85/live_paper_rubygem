@@ -101,7 +101,7 @@ describe LivePaper::BaseObject do
     end
   end
 
-  describe '.find' do
+  describe '.get' do
     before do
       allow(LivePaper::BaseObject).to receive(:api_url).and_return(@api_url)
       @data = '"id": "id", "name": "name"'
@@ -112,17 +112,17 @@ describe LivePaper::BaseObject do
       it 'should return the requested base object.' do
         allow(@data).to receive(:body).and_return(@data)
         expect(LivePaper::BaseObject).to receive(:parse).with(@data)
-        LivePaper::BaseObject.find('base_object')
+        LivePaper::BaseObject.get('base_object')
       end
     end
 
     context 'the requested base object does not exist or some error happened.' do
       it 'should not raise error.' do
-        expect { LivePaper::BaseObject.find('base_object_not_existent') }.to_not raise_error
+        expect { LivePaper::BaseObject.get('base_object_not_existent') }.to_not raise_error
       end
 
       it 'should return nil.' do
-        expect(LivePaper::BaseObject.find('base_object_not_existent')).to eq nil
+        expect(LivePaper::BaseObject.get('base_object_not_existent')).to eq nil
       end
     end
   end

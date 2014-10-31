@@ -99,10 +99,10 @@ describe LivePaper::Link do
     end
   end
 
-  describe '.find' do
+  describe '.get' do
     context 'the requested Link exists.' do
       before do
-        @link = LivePaper::Link.find('link_id')
+        @link = LivePaper::Link.get('link_id')
       end
 
       it 'should return the requested link.' do
@@ -117,11 +117,11 @@ describe LivePaper::Link do
 
     context 'the requested link does not exist or some error happened.' do
       it 'should not raise error.' do
-        expect { LivePaper::Link.find('link_not_existent') }.to_not raise_error
+        expect { LivePaper::Link.get('link_not_existent') }.to_not raise_error
       end
 
       it 'should return nil.' do
-        expect(LivePaper::Link.find('link_not_existent')).to eq nil
+        expect(LivePaper::Link.get('link_not_existent')).to eq nil
       end
     end
   end
@@ -180,6 +180,14 @@ describe LivePaper::Link do
         expect(@link.payoff).to eq nil
       end
     end
+  end
+
+  describe '#rel' do
+    before do
+          @link = LivePaper::Link.parse(lpp_link_response_json)
+        end
+
+    it 'should '
   end
 
 end
