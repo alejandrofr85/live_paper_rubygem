@@ -102,3 +102,19 @@ end
 def lpp_watermark_response
   'watermark_data'
 end
+
+def lpp_delete_error_response
+  <<-RESPONSE
+{ "associatedLinks": "1",
+  "link": [{
+      "rel": "associatedLinks",
+      "href": "https://dev.livepaperapi.com/api/v1/links?trigger=uMTGQ0xoS7exSL3iujHJSA"
+  }],
+  "error": {
+      "title": "409 Conflict",
+      "message": "The trigger to be deleted has associated links. The associated links must be deleted first."
+  }
+}
+  RESPONSE
+
+end

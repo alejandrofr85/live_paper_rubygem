@@ -143,12 +143,16 @@ describe LivePaper::BaseObject do
     end
 
     it 'should return href for rel link' do
-      puts "obj is #{@obj.to_yaml}"
       expect(@obj.rel('self')).to eq '/api/v1/payoffs/payoff_id'
     end
 
     it 'should return nil for unknown rel link' do
       expect(@obj.rel('invalid')).to be_nil
+    end
+
+    it 'should NOT crash when the link attribute is nil' do
+      @obj.link=nil
+      expect(@obj.rel('self')).to be_nil
     end
   end
 

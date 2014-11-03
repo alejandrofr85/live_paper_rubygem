@@ -83,7 +83,6 @@ describe LivePaper::Link do
     it 'should map the link array attribute.' do
       expect(@link.link).to be_a Array
       expect(@link.link.size).to eq 4
-      puts "link element is #{@link.link.to_yaml}"
       expect(@link.link).to eq [{:rel=>"self", :href=>"self_url"},
                                 {:rel=>"analytics", :href=>"analytic_url"},
                                 {:rel=>"payoff", :href=>"payoff_url"},
@@ -181,13 +180,4 @@ describe LivePaper::Link do
       end
     end
   end
-
-  describe '#rel' do
-    before do
-          @link = LivePaper::Link.parse(lpp_link_response_json)
-        end
-
-    it 'should '
-  end
-
 end
