@@ -108,7 +108,7 @@ def lpp_delete_error_response
 { "associatedLinks": "1",
   "link": [{
       "rel": "associatedLinks",
-      "href": "https://dev.livepaperapi.com/api/v1/links?trigger=uMTGQ0xoS7exSL3iujHJSA"
+      "href": "https://dev.livepaperapi.com/api/v1/links?trigger=my_trigger_id"
   }],
   "error": {
       "title": "409 Conflict",

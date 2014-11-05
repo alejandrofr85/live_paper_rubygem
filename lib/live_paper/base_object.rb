@@ -24,7 +24,7 @@ module LivePaper
     def save
       validate_attributes!
       BaseObject.request_handling_auth(self.class.api_url, 'POST') do |request|
-        response = BaseObject.send_request(request, 'application/json', create_body.to_json)
+        response = BaseObject.send_request(request, content_type: 'application/json', body: create_body.to_json)
         parse(response.body)
       end unless present? @id
       self
@@ -32,9 +32,36 @@ module LivePaper
 
     def self.get(id)
       request_handling_auth("#{api_url}/#{id}", 'GET') do |request|
-        response = send_request(request, 'application/json')
+        response = send_request(request, content_type: 'application/json')
         parse response.body
       end rescue nil
+    end
+
+    def delete
+      response_code = nil
+      if self.id
+        BaseObject.request_handling_auth("#{self.class.api_url}/#{id}", 'DELETE') do |request|
+          response = BaseObject.send_request(request, content_type: 'application/json', allow_codes: [200, 409])
+          response_code = case response.code.to_i
+            when 200
+              'OK'
+            when 409
+              @errors=response.body
+              'Conflict'
+          end
+        end
+      else
+        response_code = "Object Invalid"
+      end
+      response_code
+    end
+
+    def errors
+      begin
+        JSON.parse(@errors)
+      rescue
+        @errors
+      end
     end
 
     def self.parse(data)

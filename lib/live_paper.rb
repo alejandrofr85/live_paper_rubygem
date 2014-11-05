@@ -23,6 +23,11 @@ module LivePaper
     def initialize(auth)
       #todo: tdd, verify hash
       $lpp_basic_auth = Base64.strict_encode64("#{auth[:id]}:#{auth[:secret]}")
+      @remote_resources={}
+    end
+
+    def resources
+      @remote_resources
     end
 
     def smart_link(dest, image=nil)
@@ -44,14 +49,16 @@ module LivePaper
     def shorten(dest)
       t=ShortTrigger.create(name: 'short trigger')
       p=Payoff.create(name: 'name', type: Payoff::TYPE[:WEB], url: dest)
-      Link.create(payoff_id: p.id, trigger_id: t.id, name: "link")
+      l=Link.create(payoff_id: p.id, trigger_id: t.id, name: "link")
+      @remote_resources={link: l, payoff: p, trigger: t}
       t.short_url
     end
 
     def qr_bytes(dest)
       t=QrTrigger.create(name: 'QR code trigger')
       p=Payoff.create(name: 'name', type: Payoff::TYPE[:WEB], url: dest)
-      Link.create(payoff_id: p.id, trigger_id: t.id, name: "link")
+      l=Link.create(payoff_id: p.id, trigger_id: t.id, name: "link")
+      @remote_resources={link: l, payoff: p, trigger: t}
       t.download_qrcode
     end
 
@@ -60,7 +67,8 @@ module LivePaper
 
       t=WmTrigger.create(name: 'watermark', watermark: {strength: 10, resolution: 75, imageURL: image})
       p=Payoff.create(name: 'name', type: Payoff::TYPE[:WEB], url: dest)
-      Link.create(payoff_id: p.id, trigger_id: t.id, name: "link")
+      l=Link.create(payoff_id: p.id, trigger_id: t.id, name: "link")
+      @remote_resources={link: l, payoff: p, trigger: t}
       t.download_watermark
     rescue Exception => e
       puts "Exception!"

@@ -9,7 +9,7 @@ end
 
 describe LivePaper::BaseObject do
   before do
-    @api_url = "#{LivePaper::LP_API_HOST}/objects"
+    @api_url = "#{LivePaper::LP_API_HOST}/v99/objects"
     stub_request(:post, /.*livepaperapi.com\/auth\/token.*/).to_return(:body => lpp_auth_response_json, :status => 200)
     stub_request(:post, @api_url).to_return(:body => lpp_richpayoff_response_json, :status => 200)
 
@@ -127,19 +127,68 @@ describe LivePaper::BaseObject do
     end
   end
 
+  describe '.delete' do
+    before do
+      stub_unimplemented_methods
+      @data = {
+        name: 'name',
+        id: 'obj_id',
+        date_created: 'date_created',
+        date_modified: 'date_modified',
+        link: [
+          { :rel => "self", :href => "/api/v1/objects/obj_id" },
+          { :rel => "analytics", :href => "/analytics/v1/objects/obj_id" }
+        ]
+      }
+      @obj = LivePaper::BaseObject.create @data
+      @self_link = "#{@api_url}/#{@obj.id}"
+    end
+
+    it 'should not DELETE if the object does not have an id.' do
+      @obj.id = nil
+      ret_val = @obj.delete
+      assert_not_requested :delete, @self_link
+      expect(ret_val).to eq 'Object Invalid'
+    end
+
+    context 'successful delete' do
+      before do
+        stub_request(:delete, @self_link).to_return(:status => 200, :body => "")
+      end
+      it 'should DELETE when there is an ID' do
+        result=@obj.delete
+        assert_requested :delete, "#{@api_url}/#{@obj.id}"
+        expect(result).to eq 'OK'
+      end
+    end
+
+    context 'when link points to object' do
+      before do
+        @bodee = lpp_delete_error_response
+        stub_request(:delete, @self_link).to_return(:status => 409, :body => @bodee)
+      end
+      it 'should fail' do
+        result=@obj.delete
+        assert_requested :delete, "#{@api_url}/#{@obj.id}"
+        expect(result).to eq 'Conflict'
+        expect(@obj.errors).to eq JSON.parse @bodee
+      end
+    end
+  end
+
   describe '#rel' do
     before do
       stub_unimplemented_methods
-            @data = {
-              name: 'name',
-              date_created: 'date_created',
-              date_modified: 'date_modified',
-              link: [
-                { :rel => "self", :href => "/api/v1/payoffs/payoff_id" },
-                { :rel => "analytics", :href => "/analytics/v1/payoffs/payoff_id" }
-              ]
-            }
-            @obj = LivePaper::BaseObject.create @data
+      @data = {
+        name: 'name',
+        date_created: 'date_created',
+        date_modified: 'date_modified',
+        link: [
+          { :rel => "self", :href => "/api/v1/payoffs/payoff_id" },
+          { :rel => "analytics", :href => "/analytics/v1/payoffs/payoff_id" }
+        ]
+      }
+      @obj = LivePaper::BaseObject.create @data
     end
 
     it 'should return href for rel link' do

@@ -9,18 +9,19 @@ module LivePaper
     LP_API_HOST="https://www.livepaperapi.com"
     AUTH_URL = "#{LP_API_HOST}/auth/token"
 
-    def send_request(request, content_type = nil, body = nil)
-      request['Content-type'] = content_type if content_type
-      request.body = body if body
+    def send_request(request, options={})
+      request['Content-type'] = options[:content_type] if options[:content_type]
+      request.body = options[:body] if options[:body]
+      options[:allow_codes] ||= [200,201]
       response = @http.request(request)
-      check_response(response)
+      check_response(response, options[:allow_codes])
       response
     end
 
-    def check_response(response)
+    def check_response(response, allow_codes)
       status = response.code.to_i
       raise NotAuthenticatedError.new("Unauthorized") if status == 401
-      unless Array(200..201).include?(status)
+      unless allow_codes.include?(status)
         raise "Request failed with code #{status}"
       end
     end
@@ -62,6 +63,8 @@ module LivePaper
           Net::HTTP::Post.new(uri.request_uri)
         when 'GET'
           Net::HTTP::Get.new(uri.request_uri)
+        when 'DELETE'
+          Net::HTTP::Delete.new(uri.request_uri)
         else
           raise "Method '#{method}' not supported."
       end

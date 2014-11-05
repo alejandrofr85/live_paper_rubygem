@@ -26,27 +26,35 @@ describe LivePaper::HttpClient do
     it 'should add the content type to the request' do
       expect(@request).to receive(:[]=).with('Content-type', 'image/jpg')
       allow(@request).to receive(:body=)
-      @http_client.send_request @request, 'image/jpg', 'body'
+      @http_client.send_request @request, content_type: 'image/jpg', body: 'body'
     end
 
     it 'should add the body to the request' do
       expect(@request).to receive(:body=).with('body')
       allow(@request).to receive(:[]=)
-      @http_client.send(:send_request, @request, 'image/jpg', 'body')
+      @http_client.send(:send_request, @request, content_type: 'image/jpg', body: 'body')
     end
 
     it 'should call the request method from the http instance' do
       allow(@request).to receive(:body=)
       allow(@request).to receive(:[]=)
       expect(@http).to receive(:request)
-      @http_client.send(:send_request, @request, 'image/jpg', 'body')
+      @http_client.send(:send_request, @request, content_type: 'image/jpg', body: 'body')
     end
 
-    it 'should check the response' do
+    it 'should check the response with default allow_codes' do
       allow(@request).to receive(:body=)
       allow(@request).to receive(:[]=)
-      expect(@http_client).to receive(:check_response)
-      @http_client.send(:send_request, @request, 'image/jpg', 'body')
+      expect(@http_client).to receive(:check_response).with(anything, [200, 201])
+      @http_client.send(:send_request, @request, content_type: 'image/jpg', body: 'body')
+    end
+
+    it 'should call check_response with the provided allow_codes' do
+      allow(@request).to receive(:body=)
+      allow(@request).to receive(:[]=)
+      allow_codes = [200, 201, 409]
+      expect(@http_client).to receive(:check_response).with(anything, allow_codes)
+      @http_client.send(:send_request, @request, content_type: 'image/jpg', body: 'body', allow_codes: allow_codes)
     end
   end
 
@@ -55,21 +63,22 @@ describe LivePaper::HttpClient do
     before(:each) do
       @response = double('A mock for a response')
       allow(@response).to receive(:body)
+      @allow=[200, 201]
     end
 
     it 'should raise NotAuthenticatedError if the response code is 401' do
       allow(@response).to receive(:code).and_return('401')
-      expect { @http_client.send(:check_response, @response) }.to raise_error NotAuthenticatedError
+      expect { @http_client.send(:check_response, @response, @allow) }.to raise_error NotAuthenticatedError
     end
 
     it 'should not raise any exception if the response code is 200..201' do
       allow(@response).to receive(:code).and_return('201')
-      expect { @http_client.send(:check_response, @response) }.to_not raise_error
+      expect { @http_client.send(:check_response, @response, @allow) }.to_not raise_error
     end
 
     it 'should raise exception if the response code is other than 200..201|401' do
       allow(@response).to receive(:code).and_return('500')
-      expect { @http_client.send(:check_response, @response) }.to raise_error
+      expect { @http_client.send(:check_response, @response, @allow) }.to raise_error
     end
   end
 
@@ -159,6 +168,11 @@ describe LivePaper::HttpClient do
     it 'should create and return a Net::HTTP::Get instance if GET method is chosen.' do
       expect(Net::HTTP::Get).to receive(:new).and_call_original
       @http_client.send(:http_request, @host, 'GET')
+    end
+
+    it 'should create and return a Net::HTTP::Delete instance if DELETE method is chosen.' do
+      expect(Net::HTTP::Delete).to receive(:new).and_call_original
+      @http_client.send(:http_request, @host, 'DELETE')
     end
 
     it 'should use ssl' do
