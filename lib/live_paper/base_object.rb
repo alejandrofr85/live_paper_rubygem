@@ -37,6 +37,17 @@ module LivePaper
       end rescue nil
     end
 
+    def self.list
+      objects=[]
+      request_handling_auth("#{api_url}", 'GET') do |request|
+        response = send_request(request, content_type: 'application/json')
+        JSON.parse(response.body, symbolize_names: true)[list_key].each do |linkdata|
+          objects << self.parse({item_key => linkdata}.to_json)
+        end
+      end #rescue nil
+      objects
+    end
+
     def delete
       response_code = nil
       if self.id
@@ -73,6 +84,14 @@ module LivePaper
     end
 
     def self.api_url
+      raise NotImplementedError
+    end
+
+    def self.list_key
+      raise NotImplementedError
+    end
+
+    def self.item_key
       raise NotImplementedError
     end
 

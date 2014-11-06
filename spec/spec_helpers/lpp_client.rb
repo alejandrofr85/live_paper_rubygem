@@ -54,14 +54,23 @@ def lpp_richpayoff_response_json
   RESPONSE
 end
 
-def lpp_trigger_response_json
+def lpp_trigger_response_json(type='watermark')
   <<-RESPONSE
 {
   "trigger": {
     "id": "trigger_id",
     "name": "name",
+        "dateCreated": "2014-10-08T22:06:28.518+0000",
+        "dateModified": "2014-10-08T22:06:28.518+0000",
+    "link": [
+      {"rel":"self", "href": "https://www.livepaperapi.com/api/v1/triggers/trigger_id"},
+      {"rel":"analytics", "href": "https://www.livepaperapi.com/analytics/v1/triggers/trigger_id"},
+      {"rel":"image", "href": "https://fileapi/trigger_id/image"},
+      {"rel":"shortURL", "href": "http://hpgo.co/abc123"}
+    ],
+    "state": "ACTIVE",
+    "type": "#{type}",
     "watermark": "watermark",
-    "link": [{"rel":"image", "href": "https://fileapi/id/image"}],
     "subscription": "subscription"
   }
 }

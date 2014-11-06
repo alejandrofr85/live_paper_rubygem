@@ -99,7 +99,7 @@ describe LivePaper::WmTrigger do
   describe '.get' do
     context 'the requested trigger exists.' do
       before do
-        @trigger = LivePaper::WmTrigger.get('trigger_id')
+        @trigger = LivePaper::Trigger.get('trigger_id')
       end
 
       it 'should return the requested trigger.' do
@@ -108,15 +108,33 @@ describe LivePaper::WmTrigger do
         expect(@trigger.watermark).to eq 'watermark'
         expect(@trigger.subscription).to eq 'subscription'
       end
+
+      context 'qr trigger' do
+        before do
+          stub_request(:get, "#{LivePaper::Trigger.api_url}/qr_trigger_id").to_return(:body => lpp_trigger_response_json('qrcode'), :status => 200)
+        end
+        it 'should create a QrTrigger' do
+          qr_trigger = LivePaper::Trigger.get('qr_trigger_id')
+          expect(qr_trigger).to be_a LivePaper::QrTrigger
+        end
+      end
+
+      context 'short trigger' do
+        it 'should return a ShortTrigger' do
+          stub_request(:get, "#{LivePaper::Trigger.api_url}/short_trigger_id").to_return(:body => lpp_trigger_response_json('shorturl'), :status => 200)
+          my_trigger = LivePaper::Trigger.get('short_trigger_id')
+          expect(my_trigger).to be_a LivePaper::ShortTrigger
+        end
+      end
     end
 
     context 'the requested trigger does not exist or some error happened.' do
       it 'should not raise error.' do
-        expect { LivePaper::WmTrigger.get('trigger_not_existent') }.to_not raise_error
+        expect { LivePaper::Trigger.get('trigger_not_existent') }.to_not raise_error
       end
 
       it 'should return nil.' do
-        expect(LivePaper::WmTrigger.get('trigger_not_existent')).to eq nil
+        expect(LivePaper::Trigger.get('trigger_not_existent')).to eq nil
       end
     end
   end

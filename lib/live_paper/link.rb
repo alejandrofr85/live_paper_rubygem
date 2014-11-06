@@ -5,7 +5,7 @@ module LivePaper
     attr_accessor :payoff_id, :trigger_id
 
     def parse(jsondata)
-      data = JSON.parse(jsondata, symbolize_names: true)[:link]
+      data = JSON.parse(jsondata, symbolize_names: true)[self.class.item_key]
       assign_attributes data
       self
     end
@@ -21,6 +21,14 @@ module LivePaper
 
     def self.api_url
       "#{LP_API_HOST}/api/v1/links"
+    end
+
+    def self.list_key
+      :links
+    end
+
+    def self.item_key
+      :link
     end
 
     private

@@ -10,10 +10,18 @@ module LivePaper
     }
 
     def parse(data)
-      data = JSON.parse(data, symbolize_names: true)[:payoff]
+      data = JSON.parse(data, symbolize_names: true)[self.class.item_key]
       assign_attributes(data)
       send(present?(data[:richPayoff]) ? :parse_richpayoff : :parse_webpayoff, data)
       self
+    end
+
+    def self.list_key
+      :payoffs
+    end
+
+    def self.item_key
+      :payoff
     end
 
     def self.api_url

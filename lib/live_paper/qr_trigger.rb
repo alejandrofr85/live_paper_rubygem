@@ -1,7 +1,7 @@
 require_relative 'base_object'
 
 module LivePaper
-  class QrTrigger < BaseObject
+  class QrTrigger < Trigger
     attr_accessor :subscription, :qrcode_url
 
     DEFAULT_SUBSCRIPTION = :month
@@ -11,10 +11,6 @@ module LivePaper
       assign_attributes data
       self.qrcode_url=data[:link].select { |item| item[:rel] == "image" }.first[:href]
       self
-    end
-
-    def self.api_url
-      "#{LP_API_HOST}/api/v1/triggers"
     end
 
     def download_qrcode

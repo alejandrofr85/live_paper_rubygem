@@ -101,6 +101,30 @@ describe LivePaper::BaseObject do
     end
   end
 
+  describe '.list' do
+    before do
+      allow(LivePaper::BaseObject).to receive(:api_url).and_return(@api_url)
+      allow(LivePaper::BaseObject).to receive(:list_key).and_return(:lists)
+      allow(LivePaper::BaseObject).to receive(:item_key).and_return(:list)
+      @data = {lists: [{id: 1, name: 'first'},
+               {id: 2, name: 'second' },
+               {id: 3, name: 'third' }
+              ]}
+      stub_request(:get, "#{@api_url}").to_return(:body => @data.to_json, :status => 200)
+    end
+    it 'should return array of parsed objects' do
+      allow(@data).to receive(:body).and_return(@data)
+      @data[:lists].each do |datum|
+        expect(LivePaper::BaseObject).to receive(:parse).with({:list => datum}.to_json) { datum[:id] }
+      end
+      result = LivePaper::BaseObject.list
+      expect(result.count).to eq @data[:lists].size
+      result.each_with_index do |res, i|
+        expect(res).to eq i+1
+      end
+    end
+  end
+
   describe '.get' do
     before do
       allow(LivePaper::BaseObject).to receive(:api_url).and_return(@api_url)

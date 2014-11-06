@@ -1,7 +1,7 @@
 require_relative 'base_object'
 
 module LivePaper
-  class ShortTrigger < BaseObject
+  class ShortTrigger < Trigger
     attr_accessor :subscription, :short_url
 
     DEFAULT_SUBSCRIPTION = :month
@@ -11,10 +11,6 @@ module LivePaper
       assign_attributes data
       self.short_url=data[:link].select { |item| item[:rel] == "shortURL" }.first[:href]
       self
-    end
-
-    def self.api_url
-      "#{LP_API_HOST}/api/v1/triggers"
     end
 
     private
