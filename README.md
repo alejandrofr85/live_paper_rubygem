@@ -21,13 +21,13 @@ Or install it yourself as:
 
 ## Register with the Live Paper Service
 
-In order to obtain access credentials register here:  https://link.livepaperdeveloper.com
+In order to generate access credentials, register here:  https://www.linkcreationstudio.com
 
 ## Usage
 
 ### Authenticate
 
-Live Paper gem requires an authentication hash with :id and :secret. Obtain your credentials from the registration link above.
+The live_paper gem requires authentication. Obtain your credentials from https://www.linkcreationstudio.com/api/libraries/ruby/
 
 ```ruby
 lp = LivePaper.auth({id: "your client id", secret: "your client secret"})
@@ -47,8 +47,6 @@ short_url = lp.shorten('http://www.google.com')
 qr_bytes = lp.qr_bytes('http://www.amazon.com')
  File.open("qr.png", "w") { |f| f.write(qr_bytes) }
 ```
-
-> Note: Version 1 of the API only supports returning QR Code bytes. Version 2 may host publicly accessible QR images.
 
 ### Watermarking Images
 
