@@ -2,7 +2,7 @@ require_relative 'base_object'
 
 module LivePaper
   class WmTrigger < Trigger
-    attr_accessor :watermark, :subscription, :wm_url
+    attr_accessor :watermark, :wm_url
     WATERMARK_RESOLUTION = 75
     WATERMARK_STRENGTH = 10
     DEFAULT_SUBSCRIPTION = :month

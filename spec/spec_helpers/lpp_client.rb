@@ -77,12 +77,12 @@ def lpp_trigger_response_json(type='watermark')
   RESPONSE
 end
 
-def lpp_link_response_json
+def lpp_link_response_json(name='name')
   <<-RESPONSE
 {
   "link": {
     "id": "link_id",
-    "name": "name",
+    "name": "#{name}",
     "dateCreated": "2014-04-08T08:16:25.723+0000",
     "dateModified": "2014-04-08T08:16:25.723+0000",
     "link": [{

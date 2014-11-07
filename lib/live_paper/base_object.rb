@@ -48,6 +48,34 @@ module LivePaper
       objects
     end
 
+    def update
+      puts 'update called'
+      response_code = 'Object Invalid'
+      if self.id
+        BaseObject.request_handling_auth("#{self.class.api_url}/#{id}", 'PUT') do |request|
+          response = BaseObject.send_request(request,
+                                             content_type: 'application/json',
+                                             body: update_body.to_json,
+                                             allow_codes: [200, 400, 404, 409])
+          response_code = case response.code.to_i
+            when 200
+              puts "update response 200"
+              parse(response.body)
+              'OK'
+            when 400
+              @errors=response.body
+              'Bad Request'
+            when 409
+              @errors=response.body
+              'Conflict'
+            else
+              'Object Invalid'
+          end
+        end
+      end
+      response_code
+    end
+
     def delete
       response_code = nil
       if self.id
@@ -126,6 +154,10 @@ module LivePaper
     end
 
     def create_body
+      raise NotImplementedError
+    end
+
+    def update_body
       raise NotImplementedError
     end
   end

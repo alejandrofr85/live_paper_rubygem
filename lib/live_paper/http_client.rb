@@ -32,6 +32,7 @@ module LivePaper
         request_access_token unless @access_token
         request = http_request(url, method)
         request['Authorization'] = "Bearer #{@access_token}"
+        request['Accept'] = "application/json"
         yield request
       rescue NotAuthenticatedError => e
         tries += 1
@@ -63,6 +64,8 @@ module LivePaper
           Net::HTTP::Post.new(uri.request_uri)
         when 'GET'
           Net::HTTP::Get.new(uri.request_uri)
+        when 'PUT'
+          Net::HTTP::Put.new(uri.request_uri)
         when 'DELETE'
           Net::HTTP::Delete.new(uri.request_uri)
         else

@@ -2,7 +2,7 @@ require_relative 'base_object'
 
 module LivePaper
   class ShortTrigger < Trigger
-    attr_accessor :subscription, :short_url
+    attr_accessor :short_url
 
     DEFAULT_SUBSCRIPTION = :month
 

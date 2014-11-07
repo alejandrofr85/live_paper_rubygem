@@ -5,6 +5,7 @@ module LivePaper
     attr_accessor :payoff_id, :trigger_id
 
     def parse(jsondata)
+      puts "parsing data and it is #{jsondata}"
       data = JSON.parse(jsondata, symbolize_names: true)[self.class.item_key]
       assign_attributes data
       self
@@ -45,5 +46,14 @@ module LivePaper
         }
       }
     end
+
+    def update_body
+      {
+        link: {
+          name: @name
+        }
+      }
+    end
+
   end
 end

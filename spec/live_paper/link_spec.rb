@@ -83,10 +83,10 @@ describe LivePaper::Link do
     it 'should map the link array attribute.' do
       expect(@link.link).to be_a Array
       expect(@link.link.size).to eq 4
-      expect(@link.link).to eq [{:rel=>"self", :href=>"self_url"},
-                                {:rel=>"analytics", :href=>"analytic_url"},
-                                {:rel=>"payoff", :href=>"payoff_url"},
-                                {:rel=>"trigger", :href=>"trigger_url"}]
+      expect(@link.link).to eq [{:rel => "self", :href => "self_url"},
+                                {:rel => "analytics", :href => "analytic_url"},
+                                {:rel => "payoff", :href => "payoff_url"},
+                                {:rel => "trigger", :href => "trigger_url"}]
     end
 
     it 'should map the trigger_id attribute.' do
@@ -123,6 +123,31 @@ describe LivePaper::Link do
         expect(LivePaper::Link.get('link_not_existent')).to eq nil
       end
     end
+  end
+
+  describe '.update' do
+    let(:newname) { 'my_new_name' }
+    before do
+      @link = LivePaper::Link.new @data
+      stub_request(:put, "#{LivePaper::Link.api_url}/#{@data[:id]}").to_return(:body => lpp_link_response_json(newname), :status => 200)
+      @link.name = newname
+      @link.update
+    end
+
+    it 'should make a PUT to the link URL with the parse body.' do
+      assert_requested :put, "#{LivePaper::Link.api_url}/#{@data[:id]}", :body => {
+        link: {
+          name: newname
+        }
+      }.to_json
+    end
+
+    it 'should reflect the data returned' do
+      expect(@link.name).to eq newname
+      expect(@link.date_modified).to eq '2014-04-08T08:16:25.723+0000'
+    end
+
+
   end
 
   describe '#trigger' do

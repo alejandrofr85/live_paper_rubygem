@@ -2,7 +2,7 @@ require_relative 'base_object'
 
 module LivePaper
   class QrTrigger < Trigger
-    attr_accessor :subscription, :qrcode_url
+    attr_accessor :qrcode_url
 
     DEFAULT_SUBSCRIPTION = :month
 

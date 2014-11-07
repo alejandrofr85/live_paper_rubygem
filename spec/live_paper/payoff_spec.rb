@@ -61,7 +61,7 @@ describe LivePaper::Payoff do
                 version: 1,
                 private: {
                   :'content-type' => 'data_type',
-                  :data => 'data'
+                  :data => Base64.encode64('data'.to_json)
                 },
                 public: {
                   url: 'url'

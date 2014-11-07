@@ -1,4 +1,5 @@
 require 'spec_helper'
+require 'json'
 
 def stub_unimplemented_methods
   allow_any_instance_of(LivePaper::BaseObject).to receive(:validate_attributes!)
@@ -107,9 +108,9 @@ describe LivePaper::BaseObject do
       allow(LivePaper::BaseObject).to receive(:list_key).and_return(:lists)
       allow(LivePaper::BaseObject).to receive(:item_key).and_return(:list)
       @data = {lists: [{id: 1, name: 'first'},
-               {id: 2, name: 'second' },
-               {id: 3, name: 'third' }
-              ]}
+                       {id: 2, name: 'second'},
+                       {id: 3, name: 'third'}
+      ]}
       stub_request(:get, "#{@api_url}").to_return(:body => @data.to_json, :status => 200)
     end
     it 'should return array of parsed objects' do
@@ -151,6 +152,89 @@ describe LivePaper::BaseObject do
     end
   end
 
+  describe '.update' do
+    let(:obj_id) { 12345 }
+    let(:update_json) { {name: 'new_name'}.to_json }
+    let (:data1) { {name: 'name',
+                    id: obj_id,
+                    date_created: 'date_created',
+                    date_modified: 'date_modified'} }
+    let(:resp_body) { }
+
+    before do
+      stub_unimplemented_methods
+      allow_any_instance_of(LivePaper::BaseObject).to receive(:update_body).and_return(update_json)
+    end
+
+    context 'with valid data' do
+      let(:resp_body) { { object: {name: new_name,
+                          id: obj_id,
+                          date_created: 'date_created',
+                          date_modified: 'new_date_modified'}} }
+      let(:new_name) { 'my_valid_name_change' }
+     before do
+       @response = resp_body
+        stub_request(:put, "#{@api_url}/#{obj_id}").to_return(:body => @response, :status => 200)
+        @obj=LivePaper::BaseObject.new data1
+        @obj.name = new_name
+      end
+      it 'should return success' do
+        ret_val = @obj.update
+        assert_requested :put, "#{@api_url}/#{obj_id}"
+        expect(ret_val).to eq 'OK'
+      end
+      xit 'should reflect the updated object' do
+        allow(@response).to receive(:body).and_return(@response[:object])
+        allow(@obj).to receive(:parse) { |data| data }
+        @obj.update
+        assert_requested :put, "#{@api_url}/#{obj_id}"
+        expect(@obj).to receive(:parse).with(resp_body)
+
+        expect(@obj.name).to eq new_name
+        expect(@obj.date_modified).to eq 'new_date_modified'
+      end
+
+    end
+
+    context 'with invalid data' do
+      before do
+        stub_request(:put, "#{@api_url}/#{obj_id}").to_return(:body => resp_body, :status => 400)
+        @obj=LivePaper::BaseObject.new data1
+        @obj.name = 'my_new_name'
+      end
+      it 'should return the error details' do
+        ret_val = @obj.update
+        assert_requested :put, "#{@api_url}/#{obj_id}"
+        expect(ret_val).to eq 'Bad Request'
+      end
+      it 'should preserve the invalid object attributes' do
+        @obj.update
+        assert_requested :put, "#{@api_url}/#{obj_id}"
+        expect(@obj.name).to eq 'my_new_name'
+      end
+    end
+
+    context 'remote object has been deleted' do
+      before do
+        stub_request(:put, "#{@api_url}/#{obj_id}").to_return(:body => resp_body, :status => 404)
+      end
+      it 'should return an error' do
+        @obj=LivePaper::BaseObject.new data1
+        ret_val = @obj.update
+        assert_requested :put, "#{@api_url}/#{obj_id}"
+        expect(ret_val).to eq 'Object Invalid'
+      end
+    end
+
+    context 'remote object was never saved.' do
+      it 'should return an error' do
+        @obj = LivePaper::BaseObject.new @data
+        ret_val = @obj.update
+        expect(ret_val).to eq 'Object Invalid'
+      end
+    end
+  end
+
   describe '.delete' do
     before do
       stub_unimplemented_methods
@@ -160,8 +244,8 @@ describe LivePaper::BaseObject do
         date_created: 'date_created',
         date_modified: 'date_modified',
         link: [
-          { :rel => "self", :href => "/api/v1/objects/obj_id" },
-          { :rel => "analytics", :href => "/analytics/v1/objects/obj_id" }
+          {:rel => "self", :href => "/api/v1/objects/obj_id"},
+          {:rel => "analytics", :href => "/analytics/v1/objects/obj_id"}
         ]
       }
       @obj = LivePaper::BaseObject.create @data
@@ -208,8 +292,8 @@ describe LivePaper::BaseObject do
         date_created: 'date_created',
         date_modified: 'date_modified',
         link: [
-          { :rel => "self", :href => "/api/v1/payoffs/payoff_id" },
-          { :rel => "analytics", :href => "/analytics/v1/payoffs/payoff_id" }
+          {:rel => "self", :href => "/api/v1/payoffs/payoff_id"},
+          {:rel => "analytics", :href => "/analytics/v1/payoffs/payoff_id"}
         ]
       }
       @obj = LivePaper::BaseObject.create @data

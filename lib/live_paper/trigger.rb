@@ -2,6 +2,7 @@ require_relative 'base_object'
 
 module LivePaper
   class Trigger < BaseObject
+    attr_accessor :subscription, :state
 
     def self.api_url
       "#{LP_API_HOST}/api/v1/triggers"
@@ -30,5 +31,14 @@ module LivePaper
       trigger_class.new.parse(data_in)
     end
 
+    private
+    def update_body
+      {
+        trigger: {
+          name: @name
+        }
+      }
+    end
   end
+
 end

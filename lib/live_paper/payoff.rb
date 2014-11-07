@@ -48,6 +48,10 @@ module LivePaper
       @url = data[:URL]
     end
 
+    def update_body
+      create_body
+    end
+
     def create_body
       {
         payoff: case @type
@@ -75,7 +79,7 @@ module LivePaper
           version: 1,
           private: {
             :'content-type' => @data_type,
-            :data => @data
+            :data => Base64.encode64(@data.to_json)
           },
           public: {url: @url}
         }
