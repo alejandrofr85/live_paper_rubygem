@@ -80,9 +80,11 @@ module LivePaper
       response_code = nil
       if self.id
         BaseObject.request_handling_auth("#{self.class.api_url}/#{id}", 'DELETE') do |request|
-          response = BaseObject.send_request(request, content_type: 'application/json', allow_codes: [200, 409])
+          response = BaseObject.send_request(request, content_type: 'application/json', allow_codes: [200, 204, 409])
           response_code = case response.code.to_i
             when 200
+              'OK'
+            when 204
               'OK'
             when 409
               @errors=response.body
