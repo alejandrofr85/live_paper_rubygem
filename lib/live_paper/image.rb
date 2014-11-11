@@ -3,6 +3,7 @@ require 'rest-client'
 
 module LivePaper
   class Image
+    extend HttpClient
 
     attr_accessor :url
 

@@ -15,6 +15,7 @@ module LivePaper
 
     def download_qrcode
       QrTrigger.request_handling_auth(self.qrcode_url, 'GET') do |request|
+        request['Accept'] = "image/jpg"
         response = QrTrigger.send_request(request)
         response.body.empty? ? nil : response.body
       end

@@ -16,6 +16,7 @@ module LivePaper
 
     def download_watermark
       WmTrigger.request_handling_auth(self.wm_url, 'GET') do |request|
+        request['Accept'] = "image/jpg"
         response = WmTrigger.send_request(request)
         response.body.empty? ? nil : response.body
       end

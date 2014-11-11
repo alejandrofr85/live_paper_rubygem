@@ -32,6 +32,7 @@ module LivePaper
         request_access_token unless @access_token
         request = http_request(url, method)
         request['Authorization'] = "Bearer #{@access_token}"
+        request['X-user-info'] = 'app=rubygem'
         request['Accept'] = "application/json"
         yield request
       rescue NotAuthenticatedError => e
