@@ -49,7 +49,6 @@ module LivePaper
     end
 
     def update
-      puts 'update called'
       response_code = 'Object Invalid'
       if self.id
         BaseObject.request_handling_auth("#{self.class.api_url}/#{id}", 'PUT') do |request|
@@ -59,7 +58,6 @@ module LivePaper
                                              allow_codes: [200, 400, 404, 409])
           response_code = case response.code.to_i
             when 200
-              puts "update response 200"
               parse(response.body)
               'OK'
             when 400
