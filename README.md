@@ -23,7 +23,7 @@ Or install it yourself as:
 
 In order to generate access credentials, register here:  https://www.linkcreationstudio.com
 
-## Usage
+## Quick-Start Usage
 
 ### Authenticate
 
@@ -57,6 +57,91 @@ File.open("watermark.jpg", "w:UTF-8") { |f| f.write(wm_bytes.force_encoding("UTF
 ```
 
 > Note: Version 1 of the API only supports returning image bytes. Version 2 may host publicly accessible images.
+
+## Usage
+
+The gem supports full CRUD operations on the underlying objects. If you do not need to update or
+delete previously created objects, see the quick-start section above.
+
+### Underlying Objects
+
+**Triggers** represent the object you want to put on a page: a short url, QR code, or watermarked image.
+**Payoffs** are destinations, either the url of a webpage, or an interactive mobile experience.
+**Links** join a Trigger to a Payoff.
+
+### CRUD Example
+
+```ruby
+  lp = LivePaper.auth({id: "your client id", secret: "your client secret"})
+
+  t=ShortTrigger.create(name: 'short trigger')
+  p=Payoff.create(name: 'name', type: Payoff::TYPE[:WEB], url: "http://www.hp.com")
+  l=Link.create(payoff_id: p.id, trigger_id: t.id, name: "link")
+  @link_id=l.id
+  @payoff_id=p.id
+  @trigger_id=t.id
+  t.short_url # returns url of the form http://hpgo.co/abc123
+```
+
+After creating, you will need to persist the link, payoff, and trigger IDs in some form of
+permanent storage to later access the resources. The IDs are strings.
+
+If you want to change the destination:
+
+```ruby
+  lp = LivePaper.auth({id: "your client id", secret: "your client secret"})
+
+  p=Payoff.get(@payoff_id)
+  p.url="http://shopping.hp.com"
+  p.update
+```
+
+Still later, if you wanted to delete the resources:
+
+```ruby
+  lp = LivePaper.auth({id: "your client id", secret: "your client secret"})
+
+  # delete link first, to avoid resource conflict
+  l=Link.get(@link_id)
+  l.delete
+
+  t=Trigger.get(@trigger_id)
+  t.delete
+
+  p=Payoff.get(@payoff_id)
+  p.delete
+```
+
+You can list existing resources with the list operation.
+
+```ruby
+  lp = LivePaper.auth({id: "your client id", secret: "your client secret"})
+
+  @links=Link.list # returns array of Link objects
+
+  @payoffs=Payoff.list # returns array of Payoff objects
+```
+
+### QR Code Example
+
+```ruby
+  t=QrTrigger.create(name: 'QR code trigger')
+  p=Payoff.create(name: 'name', type: Payoff::TYPE[:WEB], url: "http://www.hp.com")
+  l=Link.create(payoff_id: p.id, trigger_id: t.id, name: "link")
+  t.download_qrcode # returns QR image bytes
+```
+
+### Watermarked Image Example
+
+```ruby
+  image = Image.upload "http://url/to_your_image"
+
+  t=WmTrigger.create(name: 'watermark', watermark: {strength: 10, resolution: 75, imageURL: image})
+  p=Payoff.create(name: 'name', type: Payoff::TYPE[:WEB], url: dest)
+  l=Link.create(payoff_id: p.id, trigger_id: t.id, name: "link")
+  t.download_watermark
+```
+
 
 ## Contributing
 
