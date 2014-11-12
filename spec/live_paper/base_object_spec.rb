@@ -174,7 +174,7 @@ describe LivePaper::BaseObject do
       let(:new_name) { 'my_valid_name_change' }
      before do
        @response = resp_body
-        stub_request(:put, "#{@api_url}/#{obj_id}").to_return(:body => @response, :status => 200)
+        stub_request(:put, "#{@api_url}/#{obj_id}").to_return(:body => resp_body.to_json, :status => 200)
         @obj=LivePaper::BaseObject.new data1
         @obj.name = new_name
       end
