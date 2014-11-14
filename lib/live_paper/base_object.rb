@@ -60,10 +60,9 @@ module LivePaper
       response_code = 'Object Invalid'
       if self.id
         response = BaseObject.rest_request( "#{self.class.api_url}/#{id}", :put, body: update_body.to_json )
-        parse(response.body)
-
         response_code = case response.code
           when 200
+            parse(response.body)
             '200 OK'
           when 400
             @errors=response.body
@@ -116,7 +115,6 @@ module LivePaper
         raise NotAuthenticatedError if response.code == 401
       rescue NotAuthenticatedError => e
         tries += 1
-        # puts "\n******** retry #{verb} #{tries} ********\n"
         if tries < 3
           request_access_token
           headers[:authorization] = "Bearer #{$lpp_access_token}"
@@ -139,11 +137,6 @@ module LivePaper
 
       response = RestClient::Request.execute(h) { |response, request, result| response }
 
-      # request = http_request(AUTH_URL, 'POST')
-      # request['Authorization'] = "Basic #{$lpp_basic_auth}"
-      # request['Content-Type'] = 'application/x-www-form-urlencoded'
-      # request.body = 'grant_type=client_credentials&scope=all'
-      # response = @http.request(request)
       parsed = JSON.parse(response.body)
       @access_token = parsed['accessToken']
       $lpp_access_token = @access_token

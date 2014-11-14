@@ -159,7 +159,7 @@ describe LivePaper::BaseObject do
                     id: obj_id,
                     date_created: 'date_created',
                     date_modified: 'date_modified'} }
-    let(:resp_body) { }
+    let(:resp_body) {}
 
     before do
       stub_unimplemented_methods
@@ -167,13 +167,13 @@ describe LivePaper::BaseObject do
     end
 
     context 'with valid data' do
-      let(:resp_body) { { object: {name: new_name,
-                          id: obj_id,
-                          date_created: 'date_created',
-                          date_modified: 'new_date_modified'}} }
+      let(:resp_body) { {object: {name: new_name,
+                                  id: obj_id,
+                                  date_created: 'date_created',
+                                  date_modified: 'new_date_modified'}} }
       let(:new_name) { 'my_valid_name_change' }
-     before do
-       @response = resp_body
+      before do
+        @response = resp_body
         stub_request(:put, "#{@api_url}/#{obj_id}").to_return(:body => resp_body.to_json, :status => 200)
         @obj=LivePaper::BaseObject.new data1
         @obj.name = new_name
@@ -385,6 +385,55 @@ describe LivePaper::BaseObject do
   end
 
   describe '.request_access_token' do
+    it 'should corerectly get the token' do
+      $lpp_access_token = nil
+      LivePaper::BaseObject.request_access_token
+      expect($lpp_access_token).to eq 'SECRETTOKEN'
+    end
+  end
+
+  describe 'rest_request' do
+    before do
+
+    end
+
+    context 'when there is no access token' do
+      before do
+        $lpp_access_token = nil
+      end
+      it 'should request the access token' do
+        expect(LivePaper::BaseObject).to receive(:request_access_token)
+        LivePaper::BaseObject.rest_request(@api_url, :post)
+      end
+    end
+
+    context 'when there is an access token' do
+      before do
+        $lpp_access_token = 'TOPSECRET'
+      end
+
+      it 'should NOT call request_access_token' do
+        expect(LivePaper::BaseObject).to receive(:request_access_token).exactly(0).times
+        LivePaper::BaseObject.rest_request(@api_url, :post)
+      end
+
+      context 'when the access token is invalid' do
+        before do
+          $lpp_access_token = 'invalid'
+
+          @response = double('A mock for a response')
+          allow(@response).to receive(:body)
+          @response.stub(:code).and_return(401, 401, 200) #fail first two calls
+          RestClient::Request.stub(:execute).and_return(@response)
+        end
+
+        it 'should request access an token' do
+          expect(LivePaper::BaseObject).to receive(:request_access_token).exactly(2).times
+          LivePaper::BaseObject.rest_request(@api_url, :put, body: @data.to_json)
+        end
+
+      end
+    end
 
   end
 end
