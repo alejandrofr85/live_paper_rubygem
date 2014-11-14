@@ -14,7 +14,7 @@ module LivePaper
     end
 
     def download_qrcode
-      response = QrTrigger.rest_request( self.qrcode_url, :get, accept: "image/jpg" )
+      response = QrTrigger.rest_request( "#{self.qrcode_url}?width=200", :get, accept: "image/jpg" )
       response.body.empty? ? nil : response.body
     end
 
