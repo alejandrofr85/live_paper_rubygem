@@ -45,7 +45,7 @@ short_url = lp.shorten('http://www.google.com')
 
 ```ruby
 qr_bytes = lp.qr_bytes('http://www.amazon.com')
- File.open("qr.png", "w") { |f| f.write(qr_bytes) }
+ File.open("qr.png", "wb") { |f| f.write(qr_bytes) }
 ```
 
 ### Watermarking Images
@@ -53,7 +53,7 @@ qr_bytes = lp.qr_bytes('http://www.amazon.com')
 ```ruby
 wm_bytes = lp.watermark_bytes("http://www.hp.com",
                               "http://www.letsstartsmall.com/ITSE2313_WebAuthoring/images/unit3/jpg_example1.jpg")
-File.open("watermark.jpg", "w:UTF-8") { |f| f.write(wm_bytes.force_encoding("UTF-8")) }
+File.open("watermark.jpg", "wb:UTF-8") { |f| f.write(wm_bytes.force_encoding("UTF-8")) }
 ```
 
 > Note: Version 1 of the API only supports returning image bytes. Version 2 may host publicly accessible images.

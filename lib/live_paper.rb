@@ -35,12 +35,12 @@ module LivePaper
       uber[:short] = shorten dest
 
       qr_data = qr_bytes dest
-      File.open("uber-qr.png", "w") { |f| f.write(qr_data) }
+      File.open("uber-qr.png", "wb") { |f| f.write(qr_data) }
       uber[:qr] = "./uber-qr.png"
 
       if image
         wm_bytes = watermark_bytes(dest, image)
-        File.open("uber-wm.jpg", "w") { |f| f.write(wm_bytes) }
+        File.open("uber-wm.jpg", "wb") { |f| f.write(wm_bytes) }
         uber[:wm] = 'uber-wm.jpg'
       end
       uber
