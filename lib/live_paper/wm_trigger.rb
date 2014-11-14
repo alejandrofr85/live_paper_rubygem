@@ -15,11 +15,11 @@ module LivePaper
     end
 
     def download_watermark
-      WmTrigger.request_handling_auth(self.wm_url, 'GET') do |request|
-        request['Accept'] = "image/jpg"
-        response = WmTrigger.send_request(request)
-        response.body.empty? ? nil : response.body
-      end
+      response = WmTrigger.rest_request( self.wm_url, :get, accept: "image/jpg", skip: :x_user_info )
+      response.body.empty? ? nil : response.body
+    rescue Exception => e
+      puts 'Exception!\n'
+      puts e.response
     end
 
     private

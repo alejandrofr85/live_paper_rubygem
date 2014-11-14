@@ -3,7 +3,6 @@ require 'rest-client'
 
 module LivePaper
   class Image
-    extend HttpClient
 
     attr_accessor :url
 
@@ -16,14 +15,15 @@ module LivePaper
       end
       begin
         src_image = RestClient.get(img, Accept: 'image/jpg')
-        request_access_token unless @access_token
+        BaseObject.request_access_token unless $lpp_access_token
         response = RestClient.post API_URL,
                                    src_image.body,
-                                   Authorization: "Bearer #{@access_token}",
+                                   authorization: "Bearer #{$lpp_access_token}",
                                    content_type: 'image/jpg'
         response.headers[:location]
       rescue Exception => e
         puts "Exception! ******\n#{e}"
+        puts e.response
         img
       end
     end

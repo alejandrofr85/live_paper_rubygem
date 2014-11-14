@@ -1,5 +1,4 @@
 require "live_paper/base_object"
-require "live_paper/http_client"
 require "live_paper/image"
 require "live_paper/link"
 require "live_paper/payoff"

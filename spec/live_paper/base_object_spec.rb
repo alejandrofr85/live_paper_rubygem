@@ -181,7 +181,7 @@ describe LivePaper::BaseObject do
       it 'should return success' do
         ret_val = @obj.update
         assert_requested :put, "#{@api_url}/#{obj_id}"
-        expect(ret_val).to eq 'OK'
+        expect(ret_val).to eq '200 OK'
       end
       xit 'should reflect the updated object' do
         allow(@response).to receive(:body).and_return(@response[:object])
@@ -266,7 +266,7 @@ describe LivePaper::BaseObject do
       it 'should DELETE when there is an ID' do
         result=@obj.delete
         assert_requested :delete, "#{@api_url}/#{@obj.id}"
-        expect(result).to eq 'OK'
+        expect(result).to eq '200 OK'
       end
     end
 
@@ -382,5 +382,9 @@ describe LivePaper::BaseObject do
     it 'should raise exception' do
       expect { LivePaper::BaseObject.new.send :create_body }.to raise_error
     end
+  end
+
+  describe '.request_access_token' do
+
   end
 end
