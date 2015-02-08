@@ -30,7 +30,8 @@ module LivePaper
 
     private
     def validate_attributes!
-      raise ArgumentError, 'Required Attributes needed: name, type, url.' unless all_present? [@name, @type, @url]
+      raise ArgumentError, 'Required Attributes needed: name, type' unless all_present? [@name, @type]
+      raise ArgumentError, 'Required Attribute needed: url.' if @type == TYPE[:WEB] and !present? @url
       raise ArgumentError, 'Required Attributes needed: data_type, data.' if @type == TYPE[:RICH] and !all_present? [@data_type, @data]
     end
 
