@@ -2,7 +2,7 @@ require_relative 'base_object'
 
 module LivePaper
   class Payoff < BaseObject
-    attr_accessor :type, :url, :data_type, :data
+    attr_accessor :type, :url, :data
 
     TYPE = {
       WEB: 'WEB_PAYOFF',
@@ -32,15 +32,13 @@ module LivePaper
     def validate_attributes!
       raise ArgumentError, 'Required Attributes needed: name, type' unless all_present? [@name, @type]
       raise ArgumentError, 'Required Attribute needed: url.' if @type == TYPE[:WEB] and !present? @url
-      raise ArgumentError, 'Required Attributes needed: data_type, data.' if @type == TYPE[:RICH] and !all_present? [@data_type, @data]
+      raise ArgumentError, 'Required Attribute needed: data.' if @type == TYPE[:RICH] and !present? @data
     end
 
     def parse_richpayoff(data)
       data = data[:richPayoff]
-
       @type = TYPE[:RICH]
       @url = data[:public][:url]
-      @data_type = data[:private][:'content-type']
       @data = JSON.parse(Base64.decode64(data[:private][:data]), symbolize_names: true) rescue nil
     end
 
@@ -79,7 +77,7 @@ module LivePaper
         richPayoff: {
           version: 1,
           private: {
-            :'content-type' => @data_type,
+            :'content-type' => 'custom-base64',
             :data => Base64.encode64(@data.to_json)
           },
           public: {url: @url}

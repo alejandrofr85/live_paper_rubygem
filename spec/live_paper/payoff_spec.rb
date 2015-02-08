@@ -29,10 +29,6 @@ describe LivePaper::Payoff do
       expect(@payoff.url).to eq @data[:url]
     end
 
-    it 'should map the data_type attribute.' do
-      expect(@payoff.data_type).to eq @data[:data_type]
-    end
-
     it 'should map the data attribute.' do
       expect(@payoff.data).to eq @data[:data]
     end
@@ -60,7 +56,7 @@ describe LivePaper::Payoff do
               richPayoff: {
                 version: 1,
                 private: {
-                  :'content-type' => 'data_type',
+                  :'content-type' => 'custom-base64',
                   :data => Base64.encode64('data'.to_json)
                 },
                 public: {
@@ -136,10 +132,6 @@ describe LivePaper::Payoff do
           }
           @payoff = LivePaper::Payoff.new @data
         end
-        it 'should raise an exception if the data_type was not provided.' do
-          @payoff.data_type = nil
-          expect { @payoff.save }.to raise_error ArgumentError
-        end
         it 'should raise an exception if the data was not provided.' do
           @payoff.data = nil
           expect { @payoff.save }.to raise_error ArgumentError
@@ -183,9 +175,6 @@ describe LivePaper::Payoff do
         expect(@payoff.type).to eq LivePaper::Payoff::TYPE[:RICH]
       end
 
-      it 'should map the data_type attribute.' do
-        expect(@payoff.data_type).to eq 'data_type'
-      end
       it 'should map the data attribute.' do
         expect(@payoff.data).to eq ({field: 1})
       end
