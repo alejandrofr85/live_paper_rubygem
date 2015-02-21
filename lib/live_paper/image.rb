@@ -28,5 +28,21 @@ module LivePaper
       end
     end
 
+    def self.from_file(path)
+      begin
+        image_bytes = File.binread(path)
+        BaseObject.request_access_token unless $lpp_access_token
+        response = RestClient.post API_URL,
+                                   image_bytes,
+                                   authorization: "Bearer #{$lpp_access_token}",
+                                   content_type: 'image/jpg'
+        response.headers[:location]
+      rescue Exception => e
+        puts "Exception! ******\n#{e}"
+        puts e.response
+        img
+      end
+    end
+
   end
 end
