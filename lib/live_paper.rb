@@ -62,8 +62,8 @@ module LivePaper
       t.download_qrcode
     end
 
-    def watermark_bytes(dest, image_url)
-      image = Image.upload image_url
+    def watermark_bytes(dest, image_uri)
+      image = Image.upload image_uri
 
       t=WmTrigger.create(name: 'watermark', watermark: {strength: 10, resolution: 75, imageURL: image})
       p=Payoff.create(name: 'name', type: Payoff::TYPE[:WEB], url: dest)
