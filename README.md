@@ -142,6 +142,11 @@ You can list existing resources with the list operation.
   t.download_watermark
 ```
 
+Alternatively, you can upload an image from your local system by providing the path to the jpg file
+
+```ruby
+  image = Image.upload "/Users/mike/images/your_image.jpg"
+```
 
 ## Contributing
 
