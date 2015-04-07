@@ -148,6 +148,39 @@ Alternatively, you can upload an image from your local system by providing the p
   image = Image.upload "/Users/mike/images/your_image.jpg"
 ```
 
+### RichPayoff Example - Alternate for Watermarked or QR Code Payoff
+
+```ruby
+  rich_data = {
+    "type":"content action layout",
+    "version":1,
+    "data":{
+      "content":{
+        "type":"image",
+        "label":"Movember!",
+        "data":{"URL":"http://static.movember.com/uploads/2014/profiles/ef4/ef48a53fb031669fe86e741164d56972-546b9b5c56e15-hero.jpg"}
+      },
+      "actions":[
+        {
+          "type":"webpage",
+          "label":"Donate!",
+          "icon":{"id":"533"},
+          "data":{"URL":"http://MOBRO.CO/oamike"}
+        },
+        {
+          "type":"share",
+          "label":"Share!",
+          "icon":{"id":"527"},
+          "data":{"URL":"Help Mike get the prize of most donations on his team! MOBRO.CO/oamike"}
+        }
+      ]
+    }
+  }
+  p=Payoff.create(name: 'name', type: Payoff::TYPE[:RICH], url: dest, data: rich_data)
+  l=Link.create(payoff_id: p.id, trigger_id: t.id, name: "link")
+  t.download_watermark
+```
+
 ## Contributing
 
 1. Fork it ( https://github.com/IPGPTP/live_paper_rubygem/fork )
