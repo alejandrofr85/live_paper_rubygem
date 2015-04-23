@@ -8,189 +8,204 @@ describe LivePaper::Payoff do
     stub_request(:get, "#{LivePaper::Payoff.api_url}/payoff_not_existent").to_return(:body => '{}', :status => 404)
   end
 
+  let(:data) {
+    {
+      id: 'id',
+      name: 'name',
+      type: 'type',
+      url: 'url',
+      data: 'data'
+    }
+  }
+  let(:payoff) { LivePaper::Payoff.new data }
+
   describe '#initialize' do
-    before do
-      @data = {
-        id: 'id',
-        name: 'name',
-        type: 'type',
-        url: 'url',
-        data_type: 'data_type',
-        data: 'data'
-      }
-      @payoff = LivePaper::Payoff.new @data
-    end
 
     it 'should map the type attribute.' do
-      expect(@payoff.type).to eq @data[:type]
+      expect(payoff.type).to eq data[:type]
     end
 
     it 'should map the url attribute.' do
-      expect(@payoff.url).to eq @data[:url]
+      expect(payoff.url).to eq data[:url]
     end
 
     it 'should map the data attribute.' do
-      expect(@payoff.data).to eq @data[:data]
+      expect(payoff.data).to eq data[:data]
     end
   end
 
   describe '#save' do
     context 'all needed attributes are provided.' do
       context 'payoff type is RICH_PAYOFF.' do
-        before :each do
-          @data = {
+        let(:rich_data) {
+          {
+            type: "content action layout",
+            version: 1,
+            data: {
+              content: {
+                type: "image",
+                label: "Movember!",
+                data: {URL: "http://static.movember.com/uploads/2014/profiles/ef4/ef48a53fb031669fe86e741164d56972-546b9b5c56e15-hero.jpg"}
+              },
+              actions: [
+                {
+                  type: "webpage",
+                  label: "Donate!",
+                  icon: {id: "533"},
+                  data: {URL: "http://MOBRO.CO/oamike"}
+                },
+                {
+                  type: "share",
+                  label: "Share!",
+                  icon: {id: "527"},
+                  data: {URL: "Help Mike get the prize of most donations on his team! MOBRO.CO/oamike"}
+                }
+              ]
+            }
+          }
+        }
+        let(:data) {
+          {
             name: 'name',
             type: LivePaper::Payoff::TYPE[:RICH],
             url: 'url',
-            data_type: 'data_type',
-            data: 'data'
+            data: rich_data
           }
-          @payoff = LivePaper::Payoff.new @data
-        end
+        }
 
         it 'should make a POST to the payoff URL with the richpayoff options hash.' do
-          @payoff.save
+          payoff.save
           assert_requested :post, LivePaper::Payoff.api_url, :body => {
-            payoff: {
-              name: 'name',
-              richPayoff: {
-                version: 1,
-                private: {
-                  :'content-type' => 'custom-base64',
-                  :data => Base64.encode64('data'.to_json)
-                },
-                public: {
-                  url: 'url'
-                }
-              }
-            }
-          }.to_json
+                                  payoff: {
+                                    name: 'name',
+                                    richPayoff: {
+                                      version: 1,
+                                      private: {
+                                        :'content-type' => 'custom-base64',
+                                        :data => Base64.encode64(rich_data.to_json)
+                                      },
+                                      public: {
+                                        url: 'url'
+                                      }
+                                    }
+                                  }
+                                }.to_json
         end
       end
 
       context 'payoff type is WEB_PAYOFF.' do
-        before :each do
-          @data = {
+        let(:data) {
+          {
             name: 'name',
             type: LivePaper::Payoff::TYPE[:WEB],
             url: 'url'
           }
-          @payoff = LivePaper::Payoff.new @data
-        end
+        }
 
         it 'should make a POST to the payoff URL with the webpayoff options hash.' do
-          @payoff.save
+          payoff.save
           assert_requested :post, LivePaper::Payoff.api_url, :body => {
-            payoff: {
-              name: @data[:name],
-              URL: @data[:url]
-            }
-          }.to_json
+                                  payoff: {
+                                    name: data[:name],
+                                    URL: data[:url]
+                                  }
+                                }.to_json
         end
       end
 
     end
 
     context 'when we do not have all needed data.' do
-      before :each do
-        @data = {
+      let(:data) {
+        {
           name: 'name',
           type: LivePaper::Payoff::TYPE[:WEB],
           url: 'url'
         }
-        @payoff = LivePaper::Payoff.new @data
-      end
-
+      }
       it 'should raise an exception if the name was not provided.' do
-        @payoff.name = nil
-        expect { @payoff.save }.to raise_error ArgumentError
+        payoff.name = nil
+        expect { payoff.save }.to raise_error ArgumentError
       end
 
       it 'should raise an exception if the type was not provided.' do
-        @payoff.type = nil
-        expect { @payoff.save }.to raise_error ArgumentError
+        payoff.type = nil
+        expect { payoff.save }.to raise_error ArgumentError
       end
 
       it 'should raise an exception a unsupported type was provided.' do
-        @payoff.type = 'unsupported type'
-        expect { @payoff.save }.to raise_error ArgumentError
+        payoff.type = 'unsupported type'
+        expect { payoff.save }.to raise_error ArgumentError
       end
 
       it 'should raise an exception if the url was not provided.' do
-        @payoff.url = nil
-        expect { @payoff.save }.to raise_error ArgumentError
+        payoff.url = nil
+        expect { payoff.save }.to raise_error ArgumentError
       end
 
       context 'payoff type is RICH_PAYOFF.' do
-        before :each do
-          @data = {
+        let(:data) {
+          {
             name: 'name',
             type: LivePaper::Payoff::TYPE[:RICH],
             url: 'url',
-            data_type: 'data_type',
             data: 'data'
           }
-          @payoff = LivePaper::Payoff.new @data
-        end
+        }
+
         it 'should raise an exception if the data was not provided.' do
-          @payoff.data = nil
-          expect { @payoff.save }.to raise_error ArgumentError
+          payoff.data = nil
+          expect { payoff.save }.to raise_error ArgumentError
         end
       end
     end
   end
 
   describe '#parse' do
-    before do
-      @payoff = LivePaper::Payoff.parse(lpp_payoff_response_json)
-    end
+    let(:payoff) { LivePaper::Payoff.parse(lpp_payoff_response_json) }
 
     it 'should return a Payoff object.' do
-      expect(@payoff.class).to eq LivePaper::Payoff
+      expect(payoff.class).to eq LivePaper::Payoff
     end
 
     it 'should map the id attribute.' do
-      expect(@payoff.id).to eq 'payoff_id'
+      expect(payoff.id).to eq 'payoff_id'
     end
     it 'should map the name attribute.' do
-      expect(@payoff.name).to eq 'name'
+      expect(payoff.name).to eq 'name'
     end
 
     it 'should map the url attribute.' do
-      expect(@payoff.url).to eq 'url'
+      expect(payoff.url).to eq 'url'
     end
 
     context 'when the data is from a web payoff.' do
       it 'should map the payoff type attribute.' do
-        expect(@payoff.type).to eq LivePaper::Payoff::TYPE[:WEB]
+        expect(payoff.type).to eq LivePaper::Payoff::TYPE[:WEB]
       end
     end
 
     context 'when the data is from a rich payoff.' do
-      before do
-        @payoff = LivePaper::Payoff.parse(lpp_richpayoff_response_json)
-      end
+      let(:payoff) { LivePaper::Payoff.parse(lpp_richpayoff_response_json) }
 
       it 'should map the payoff type attribute.' do
-        expect(@payoff.type).to eq LivePaper::Payoff::TYPE[:RICH]
+        expect(payoff.type).to eq LivePaper::Payoff::TYPE[:RICH]
       end
 
       it 'should map the data attribute.' do
-        expect(@payoff.data).to eq ({field: 1})
+        expect(payoff.data).to eq ({field: 1})
       end
     end
   end
 
   describe '.get' do
     context 'the requested payoff exists.' do
-      before do
-        @payoff = LivePaper::Payoff.get('payoff_id')
-      end
+      let(:payoff) { LivePaper::Payoff.get('payoff_id') }
 
       it 'should return the requested payoff.' do
-        expect(@payoff.id).to eq 'payoff_id'
-        expect(@payoff.name).to eq 'name'
-        expect(@payoff.url).to eq 'url'
+        expect(payoff.id).to eq 'payoff_id'
+        expect(payoff.name).to eq 'name'
+        expect(payoff.url).to eq 'url'
       end
 
     end
