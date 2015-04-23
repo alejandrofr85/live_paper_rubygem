@@ -3,123 +3,121 @@ require 'json'
 
 def stub_unimplemented_methods
   allow_any_instance_of(LivePaper::BaseObject).to receive(:validate_attributes!)
-  allow_any_instance_of(LivePaper::BaseObject).to receive(:create_body).and_return(@data)
+  allow_any_instance_of(LivePaper::BaseObject).to receive(:create_body).and_return(data)
   allow_any_instance_of(LivePaper::BaseObject).to receive(:parse) { |data| data }
-  allow(LivePaper::BaseObject).to receive(:api_url).and_return(@api_url)
+  allow(LivePaper::BaseObject).to receive(:api_url).and_return(api_url)
 end
 
 describe LivePaper::BaseObject do
-  before do
-    @api_url = "#{LivePaper::LP_API_HOST}/v99/objects"
-    stub_request(:post, /.*livepaperapi.com\/auth\/token.*/).to_return(:body => lpp_auth_response_json, :status => 200)
-    stub_request(:post, @api_url).to_return(:body => lpp_richpayoff_response_json, :status => 200)
-
-    @data = {
+  let(:api_url) { "#{LivePaper::LP_API_HOST}/v99/objects" }
+  let(:data) {
+    {
       name: 'name',
       date_created: 'date_created',
       date_modified: 'date_modified'
     }
+  }
+  let(:object) { LivePaper::BaseObject.new data }
 
+  before do
+    stub_request(:post, /.*livepaperapi.com\/auth\/token.*/).to_return(:body => lpp_auth_response_json, :status => 200)
+    stub_request(:post, api_url).to_return(:body => lpp_richpayoff_response_json, :status => 200)
   end
 
   describe '#initialize' do
-    before do
-      @data = {
+    let(:data) {
+      {
         id: 'id',
         name: 'name',
         date_created: 'date_created',
         date_modified: 'date_modified'
       }
-      @object = LivePaper::BaseObject.new @data
-    end
+    }
 
     it 'should map the id attribute.' do
-      expect(@object.id).to eq @data[:id]
+      expect(object.id).to eq data[:id]
     end
 
     it 'should map the name attribute.' do
-      expect(@object.name).to eq @data[:name]
+      expect(object.name).to eq data[:name]
     end
 
     it 'should map the date_created attribute.' do
-      expect(@object.date_created).to eq @data[:date_created]
+      expect(object.date_created).to eq data[:date_created]
     end
 
     it 'should map the date_modified attribute.' do
-      expect(@object.date_modified).to eq @data[:date_modified]
+      expect(object.date_modified).to eq data[:date_modified]
     end
   end
 
   describe '#save' do
     before do
       stub_unimplemented_methods
-      @data = {
-        name: 'name',
-        date_created: 'date_created',
-        date_modified: 'date_modified'
-      }
-      @obj = LivePaper::BaseObject.new @data
     end
 
     it 'should not make a POST if the object has already an id.' do
-      @obj.id = 'id'
-      @obj.save
-      assert_not_requested :post, @api_url
+      object.id = 'id'
+      object.save
+      assert_not_requested :post, api_url
     end
 
     it 'should re-assign the current object attributes.' do
-      @obj.save
-      expect(@obj.name).to eq @data[:name]
-      expect(@obj.date_created).to eq @data[:date_created]
-      expect(@obj.date_modified).to eq @data[:date_modified]
+      object.save
+      expect(object.name).to eq data[:name]
+      expect(object.date_created).to eq data[:date_created]
+      expect(object.date_modified).to eq data[:date_modified]
     end
 
     it 'should return the object instance.' do
-      obj = @obj.save
-      expect(obj).to eq @obj
+      obj = object.save
+      expect(obj).to eq object
     end
 
     it 'should make a POST to the api_url with the body provided.' do
-      @obj.save
-      assert_requested :post, @api_url, :body => @data.to_json
+      object.save
+      assert_requested :post, api_url, :body => data.to_json
     end
   end
 
   describe '.create' do
+    let(:object) { LivePaper::BaseObject.create data }
     before do
       stub_unimplemented_methods
-      @obj = LivePaper::BaseObject.create @data
     end
 
     it 'should return a object instance.' do
-      expect(@obj.class).to eq LivePaper::BaseObject
+      expect(object.class).to eq LivePaper::BaseObject
     end
 
     it 'should return the object instance with the provided + updated data.' do
-      expect(@obj.name).to eq @data[:name]
-      expect(@obj.date_created).to eq @data[:date_created]
-      expect(@obj.date_modified).to eq @data[:date_modified]
+      expect(object.name).to eq data[:name]
+      expect(object.date_created).to eq data[:date_created]
+      expect(object.date_modified).to eq data[:date_modified]
     end
   end
 
   describe '.list' do
+    let(:data) {
+      {lists: [{id: 1, name: 'first'},
+               {id: 2, name: 'second'},
+               {id: 3, name: 'third'}
+      ]}
+    }
     before do
-      allow(LivePaper::BaseObject).to receive(:api_url).and_return(@api_url)
+      allow(LivePaper::BaseObject).to receive(:api_url).and_return(api_url)
       allow(LivePaper::BaseObject).to receive(:list_key).and_return(:lists)
       allow(LivePaper::BaseObject).to receive(:item_key).and_return(:list)
-      @data = {lists: [{id: 1, name: 'first'},
-                       {id: 2, name: 'second'},
-                       {id: 3, name: 'third'}
-      ]}
-      stub_request(:get, "#{@api_url}").to_return(:body => @data.to_json, :status => 200)
+      stub_request(:get, "#{api_url}").to_return(:body => data.to_json, :status => 200)
     end
+
     it 'should return array of parsed objects' do
-      allow(@data).to receive(:body).and_return(@data)
-      @data[:lists].each do |datum|
+      allow(data).to receive(:body).and_return(data)
+      data[:lists].each do |datum|
         expect(LivePaper::BaseObject).to receive(:parse).with({:list => datum}.to_json) { datum[:id] }
       end
       result = LivePaper::BaseObject.list
-      expect(result.count).to eq @data[:lists].size
+      expect(result.count).to eq data[:lists].size
       result.each_with_index do |res, i|
         expect(res).to eq i+1
       end
@@ -128,15 +126,15 @@ describe LivePaper::BaseObject do
 
   describe '.get' do
     before do
-      allow(LivePaper::BaseObject).to receive(:api_url).and_return(@api_url)
-      @data = '"id": "id", "name": "name"'
-      stub_request(:get, "#{@api_url}/base_object").to_return(:body => @data, :status => 200)
-      stub_request(:get, "#{@api_url}/base_object_not_existent").to_return(:body => '{}', :status => 404)
+      allow(LivePaper::BaseObject).to receive(:api_url).and_return(api_url)
+      @body = '"id": "id", "name": "name"'
+      stub_request(:get, "#{api_url}/base_object").to_return(:body => @body, :status => 200)
+      stub_request(:get, "#{api_url}/base_object_not_existent").to_return(:body => '{}', :status => 404)
     end
     context 'the requested base_object exists.' do
       it 'should return the requested base object.' do
-        allow(@data).to receive(:body).and_return(@data)
-        expect(LivePaper::BaseObject).to receive(:parse).with(@data)
+        allow(@body).to receive(:body).and_return(@body)
+        expect(LivePaper::BaseObject).to receive(:parse).with(@body)
         LivePaper::BaseObject.get('base_object')
       end
     end
@@ -155,10 +153,10 @@ describe LivePaper::BaseObject do
   describe '.update' do
     let(:obj_id) { 12345 }
     let(:update_json) { {name: 'new_name'}.to_json }
-    let (:data1) { {name: 'name',
-                    id: obj_id,
-                    date_created: 'date_created',
-                    date_modified: 'date_modified'} }
+    let (:data) { {name: 'name',
+                   id: obj_id,
+                   date_created: 'date_created',
+                   date_modified: 'date_modified'} }
     let(:resp_body) {}
 
     before do
@@ -173,72 +171,59 @@ describe LivePaper::BaseObject do
                                   date_modified: 'new_date_modified'}} }
       let(:new_name) { 'my_valid_name_change' }
       before do
-        @response = resp_body
-        stub_request(:put, "#{@api_url}/#{obj_id}").to_return(:body => resp_body.to_json, :status => 200)
-        @obj=LivePaper::BaseObject.new data1
-        @obj.name = new_name
+        stub_request(:put, "#{api_url}/#{obj_id}").to_return(:body => resp_body.to_json, :status => 200)
       end
       it 'should return success' do
-        ret_val = @obj.update
-        assert_requested :put, "#{@api_url}/#{obj_id}"
+        object.name = new_name
+        ret_val = object.update
+        assert_requested :put, "#{api_url}/#{obj_id}"
         expect(ret_val).to eq '200 OK'
       end
-      xit 'should reflect the updated object' do
-        allow(@response).to receive(:body).and_return(@response[:object])
-        allow(@obj).to receive(:parse) { |data| data }
-        @obj.update
-        assert_requested :put, "#{@api_url}/#{obj_id}"
-        expect(@obj).to receive(:parse).with(resp_body)
-
-        expect(@obj.name).to eq new_name
-        expect(@obj.date_modified).to eq 'new_date_modified'
-      end
-
     end
 
     context 'with invalid data' do
       before do
-        stub_request(:put, "#{@api_url}/#{obj_id}").to_return(:body => resp_body, :status => 400)
-        @obj=LivePaper::BaseObject.new data1
-        @obj.name = 'my_new_name'
+        stub_request(:put, "#{api_url}/#{obj_id}").to_return(:body => resp_body, :status => 400)
+        object.name = 'my_new_name'
       end
+
       it 'should return the error details' do
-        ret_val = @obj.update
-        assert_requested :put, "#{@api_url}/#{obj_id}"
+        ret_val = object.update
+        assert_requested :put, "#{api_url}/#{obj_id}"
         expect(ret_val).to eq 'Bad Request'
       end
       it 'should preserve the invalid object attributes' do
-        @obj.update
-        assert_requested :put, "#{@api_url}/#{obj_id}"
-        expect(@obj.name).to eq 'my_new_name'
+        object.update
+        assert_requested :put, "#{api_url}/#{obj_id}"
+        expect(object.name).to eq 'my_new_name'
       end
     end
 
     context 'remote object has been deleted' do
       before do
-        stub_request(:put, "#{@api_url}/#{obj_id}").to_return(:body => resp_body, :status => 404)
+        stub_request(:put, "#{api_url}/#{obj_id}").to_return(:body => resp_body, :status => 404)
       end
+
       it 'should return an error' do
-        @obj=LivePaper::BaseObject.new data1
-        ret_val = @obj.update
-        assert_requested :put, "#{@api_url}/#{obj_id}"
+        ret_val = object.update
+        assert_requested :put, "#{api_url}/#{obj_id}"
         expect(ret_val).to eq 'Object Invalid'
       end
     end
 
     context 'remote object was never saved.' do
+      let(:obj_id) { nil }
       it 'should return an error' do
-        @obj = LivePaper::BaseObject.new @data
-        ret_val = @obj.update
+        obj = LivePaper::BaseObject.new data
+        ret_val = obj.update
         expect(ret_val).to eq 'Object Invalid'
       end
     end
   end
 
   describe '.delete' do
-    before do
-      stub_unimplemented_methods
-      @data = {
+    let(:data) {
+      {
         name: 'name',
         id: 'obj_id',
         date_created: 'date_created',
@@ -248,38 +233,41 @@ describe LivePaper::BaseObject do
           {:rel => "analytics", :href => "/analytics/v1/objects/obj_id"}
         ]
       }
-      @obj = LivePaper::BaseObject.create @data
-      @self_link = "#{@api_url}/#{@obj.id}"
+    }
+    let(:self_link) { "#{api_url}/#{object.id}" }
+
+    before do
+      stub_unimplemented_methods
     end
 
     it 'should not DELETE if the object does not have an id.' do
-      @obj.id = nil
-      ret_val = @obj.delete
-      assert_not_requested :delete, @self_link
+      object.id = nil
+      ret_val = object.delete
+      assert_not_requested :delete, self_link
       expect(ret_val).to eq 'Object Invalid'
     end
 
     context 'successful delete' do
       before do
-        stub_request(:delete, @self_link).to_return(:status => 200, :body => "")
+        stub_request(:delete, self_link).to_return(:status => 200, :body => "")
       end
       it 'should DELETE when there is an ID' do
-        result=@obj.delete
-        assert_requested :delete, "#{@api_url}/#{@obj.id}"
+        result=object.delete
+        assert_requested :delete, self_link
         expect(result).to eq '200 OK'
       end
     end
 
     context 'when link points to object' do
       before do
-        @bodee = lpp_delete_error_response
-        stub_request(:delete, @self_link).to_return(:status => 409, :body => @bodee)
+        @body = lpp_delete_error_response
+        stub_request(:delete, self_link).to_return(:status => 409, :body => @body)
       end
       it 'should fail' do
-        result=@obj.delete
-        assert_requested :delete, "#{@api_url}/#{@obj.id}"
+        result=object.delete
+        assert_requested :delete, self_link
         expect(result).to eq 'Conflict'
-        expect(@obj.errors).to eq JSON.parse @bodee
+        expect(object.errors).to eq JSON.parse(@body)
       end
     end
   end
@@ -403,7 +391,7 @@ describe LivePaper::BaseObject do
       end
       it 'should request the access token' do
         expect(LivePaper::BaseObject).to receive(:request_access_token)
-        LivePaper::BaseObject.rest_request(@api_url, :post)
+        LivePaper::BaseObject.rest_request(api_url, :post)
       end
     end
 
@@ -414,7 +402,7 @@ describe LivePaper::BaseObject do
 
       it 'should NOT call request_access_token' do
         expect(LivePaper::BaseObject).to receive(:request_access_token).exactly(0).times
-        LivePaper::BaseObject.rest_request(@api_url, :post)
+        LivePaper::BaseObject.rest_request(api_url, :post)
       end
 
       context 'when the access token is invalid' do
@@ -429,7 +417,7 @@ describe LivePaper::BaseObject do
 
         it 'should request access an token' do
           expect(LivePaper::BaseObject).to receive(:request_access_token).exactly(2).times
-          LivePaper::BaseObject.rest_request(@api_url, :put, body: @data.to_json)
+          LivePaper::BaseObject.rest_request(api_url, :put, body: data.to_json)
         end
 
       end
