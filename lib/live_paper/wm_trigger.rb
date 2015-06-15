@@ -15,7 +15,7 @@ module LivePaper
     end
 
     def download_watermark
-      response = WmTrigger.rest_request( self.wm_url, :get, accept: "image/jpg", skip: :x_user_info )
+      response = WmTrigger.rest_request( self.wm_url, :get, accept: "image/jpg" )
       response.body.empty? ? nil : response.body
     rescue Exception => e
       puts 'Exception!\n'

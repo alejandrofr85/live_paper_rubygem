@@ -104,7 +104,7 @@ module LivePaper
       headers = {}
       headers[:authorization] = "Bearer #{$lpp_access_token}"
       headers[:accept] = options[:accept] || "application/json"
-      headers[:x_user_info] = 'app=rubygem' unless options[:skip] == :user_info  #watermark download fails if set
+      headers[:"X-user-info"] = 'app=rubygem'
       headers[:content_type] = 'application/json' unless options[:body].nil?
 
       h = {:method => verb, :url => url.to_s, :headers => headers}
