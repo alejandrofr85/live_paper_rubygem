@@ -2,7 +2,7 @@ require_relative 'base_object'
 
 module LivePaper
   class WmTrigger < Trigger
-    attr_accessor :watermark, :wm_url
+    attr_accessor :wm_url
     WATERMARK_RESOLUTION = 75
     WATERMARK_STRENGTH = 10
     DEFAULT_SUBSCRIPTION = :month
@@ -14,30 +14,25 @@ module LivePaper
       self
     end
 
-    def download_watermark
-      response = WmTrigger.rest_request( self.wm_url, :get, accept: "image/jpg" )
-      response.body.empty? ? nil : response.body
-    rescue Exception => e
-      puts 'Exception!\n'
-      puts e.response
+    def download_watermark(image_url, options = {})
+      resolution = options[:resolution] || WATERMARK_RESOLUTION
+      strength = options[:strength] || WATERMARK_STRENGTH
+      url = "#{self.wm_url}?imageUrl=#{CGI.escape(image_url)}&resolution=#{resolution}&strength=#{strength}"
+      begin
+        response = WmTrigger.rest_request( url, :get, accept: "image/jpg" )
+        response.body.empty? ? nil : response.body
+      rescue Exception => e
+        puts 'Exception!\n'
+        puts e.response
+      end
     end
 
     private
-    def validate_attributes!
-      raise ArgumentError, 'Required Attributes needed: name and watermark.' unless all_present? [@name, @watermark]
-      raise ArgumentError, 'Required Attributes needed: watermark[:strength] and watermark[:imageURL].' unless all_keys_present? @watermark, [:strength, :imageURL]
-    end
-
     def create_body
       {
         trigger: {
           name: @name,
-          watermark: {
-            outputImageFormat: 'JPEG',
-            resolution: WATERMARK_RESOLUTION,
-            strength: @watermark[:strength],
-            imageURL: @watermark[:imageURL]
-          },
+          type: "watermark",
           subscription: {
             package: DEFAULT_SUBSCRIPTION.to_s
           }

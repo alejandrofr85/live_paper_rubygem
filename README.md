@@ -136,10 +136,10 @@ You can list existing resources with the list operation.
 ```ruby
   image = Image.upload "http://url/to_your_image"
 
-  t=WmTrigger.create(name: 'watermark', watermark: {strength: 10, resolution: 75, imageURL: image})
+  t=WmTrigger.create(name: 'watermark')
   p=Payoff.create(name: 'name', type: Payoff::TYPE[:WEB], url: dest)
   l=Link.create(payoff_id: p.id, trigger_id: t.id, name: "link")
-  t.download_watermark
+  t.download_watermark(image, {strength: 10, resolution: 75})
 ```
 
 Alternatively, you can upload an image from your local system by providing the path to the jpg file

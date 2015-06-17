@@ -19,10 +19,6 @@ module LivePaper
     end
 
     private
-    def validate_attributes!
-      raise ArgumentError, 'Required Attributes needed: name' unless all_present? [@name]
-    end
-
     def create_body
       {
         trigger: {

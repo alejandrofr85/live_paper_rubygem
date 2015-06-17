@@ -6,14 +6,12 @@ describe LivePaper::WmTrigger do
   before do
     stub_request(:post, /.*livepaperapi.com\/auth\/token.*/).to_return(:body => lpp_auth_response_json, :status => 200)
     stub_request(:post, LivePaper::WmTrigger.api_url).to_return(:body => lpp_trigger_response_json, :status => 200)
-    stub_request(:get, 'https://fileapi/id/image').to_return(:body => lpp_watermark_response, :status => 200)
     stub_request(:get, "#{LivePaper::WmTrigger.api_url}/trigger_id").to_return(:body => lpp_trigger_response_json, :status => 200)
     stub_request(:get, "#{LivePaper::WmTrigger.api_url}/trigger_not_existent").to_return(:body => '{}', :status => 404)
 
     @data = {
       id: 'id',
       name: 'name',
-      watermark: {strength: 10, imageURL: 'url'},
       subscription: 'subscription'
     }
   end
@@ -21,10 +19,6 @@ describe LivePaper::WmTrigger do
   describe '#initialize' do
     before do
       @trigger = LivePaper::WmTrigger.new @data
-    end
-
-    it 'should map the watermark attribute.' do
-      expect(@trigger.watermark).to eq @data[:watermark]
     end
 
     it 'should map the subscription attribute.' do
@@ -44,12 +38,7 @@ describe LivePaper::WmTrigger do
         assert_requested :post, LivePaper::WmTrigger.api_url, :body => {
           trigger: {
             name: 'name',
-            watermark: {
-              outputImageFormat: 'JPEG',
-              resolution: 75,
-              strength: 10,
-              imageURL: 'url'
-            },
+            type: 'watermark',
             subscription: {package: 'month'}
           }
         }.to_json
@@ -59,12 +48,6 @@ describe LivePaper::WmTrigger do
     context 'when we do not have all needed data,' do
       it 'should raise exception if the name is no provided.' do
         @data.delete :name
-        trigger = LivePaper::WmTrigger.new @data
-        expect { trigger.save }.to raise_error
-      end
-
-      it 'should raise exception if the watermark is no provided.' do
-        @data.delete :watermark
         trigger = LivePaper::WmTrigger.new @data
         expect { trigger.save }.to raise_error
       end
@@ -87,10 +70,6 @@ describe LivePaper::WmTrigger do
       expect(@trigger.name).to eq 'name'
     end
 
-    it 'should map the watermark attribute.' do
-      expect(@trigger.watermark).to eq 'watermark'
-    end
-
     it 'should map the subscription attribute.' do
       expect(@trigger.subscription).to eq 'subscription'
     end
@@ -105,7 +84,7 @@ describe LivePaper::WmTrigger do
       it 'should return the requested trigger.' do
         expect(@trigger.id).to eq 'trigger_id'
         expect(@trigger.name).to eq 'name'
-        expect(@trigger.watermark).to eq 'watermark'
+        expect(@trigger.class).to eq LivePaper::WmTrigger
         expect(@trigger.subscription).to eq 'subscription'
       end
 
@@ -140,13 +119,19 @@ describe LivePaper::WmTrigger do
   end
 
   describe '#download_watermark' do
+    let(:image_url) { 'http://lpp_file_storage/image/mine.jpg' }
+    let(:encoded_image_url) { CGI.escape(image_url) }
+    let(:resolution) { LivePaper::WmTrigger::WATERMARK_RESOLUTION }
+    let(:strength) { LivePaper::WmTrigger::WATERMARK_STRENGTH }
+
     before do
+      stub_request(:get, "https://fileapi/id/image?imageUrl=#{encoded_image_url}&resolution=#{resolution}&strength=#{strength}").to_return(:body => lpp_watermark_response, :status => 200)
       @trigger = LivePaper::WmTrigger.new @data
       @trigger.wm_url='https://fileapi/id/image'
     end
-
+    
     it 'should return the watermark image data.' do
-      expect(@trigger.download_watermark).to eq 'watermark_data'
+      expect(@trigger.download_watermark(image_url)).to eq 'watermark_data'
     end
   end
 end

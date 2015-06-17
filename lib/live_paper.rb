@@ -65,11 +65,11 @@ module LivePaper
     def watermark_bytes(dest, image_uri)
       image = Image.upload image_uri
 
-      t=WmTrigger.create(name: 'watermark', watermark: {strength: 10, resolution: 75, imageURL: image})
+      t=WmTrigger.create(name: 'watermark')
       p=Payoff.create(name: 'name', type: Payoff::TYPE[:WEB], url: dest)
       l=Link.create(payoff_id: p.id, trigger_id: t.id, name: "link")
       @remote_resources={link: l, payoff: p, trigger: t}
-      t.download_watermark
+      t.download_watermark(image)
     rescue Exception => e
       puts "Exception!"
       puts e.response
