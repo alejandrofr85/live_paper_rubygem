@@ -3,34 +3,64 @@ require 'spec_helper'
 DOWNLOAD_URL = "https://watermark.livepaperapi.com/watermark/v1/triggers"
 
 describe LivePaper::WmTrigger do
+  let(:start_date) { "my_start_date" }
+  let(:end_date) { "my_end_date" }
+  let(:data) {
+    {
+      id: 'id',
+      name: 'name',
+      start_date: start_date,
+      end_date: end_date
+    }
+  }
+
   before do
     stub_request(:post, /.*livepaperapi.com\/auth\/token.*/).to_return(:body => lpp_auth_response_json, :status => 200)
     stub_request(:post, LivePaper::WmTrigger.api_url).to_return(:body => lpp_trigger_response_json, :status => 200)
     stub_request(:get, "#{LivePaper::WmTrigger.api_url}/trigger_id").to_return(:body => lpp_trigger_response_json, :status => 200)
     stub_request(:get, "#{LivePaper::WmTrigger.api_url}/trigger_not_existent").to_return(:body => '{}', :status => 404)
-
-    @data = {
-      id: 'id',
-      name: 'name',
-      subscription: 'subscription'
-    }
   end
 
-  describe '#initialize' do
+  describe '#initialize without specifying start_date end_date' do
+    let(:data){ 
+      {
+        id: 'id',
+        name: 'name'
+      }
+    }
     before do
-      @trigger = LivePaper::WmTrigger.new @data
+      @trigger = LivePaper::WmTrigger.new data
     end
 
-    it 'should map the subscription attribute.' do
-      expect(@trigger.subscription).to eq @data[:subscription]
+    it 'should set startDate attribute to nil by default.' do
+      expect(@trigger.start_date).to be_nil
+    end
+
+    it 'should set endDate attribute to nil by default.' do
+      expect(@trigger.end_date).to be_nil
+    end
+
+  end
+
+  describe '#initialize with specifying start_date and end_date' do
+    before do
+      @trigger = LivePaper::WmTrigger.new data
+    end
+
+    it 'should set startDate attribute.' do
+      expect(@trigger.start_date).to eq(start_date)
+    end
+
+    it 'should set endDate attribute.' do
+      expect(@trigger.end_date).to eq(end_date)
     end
   end
 
   describe '#save' do
     context 'when all needed attributes are provided,' do
       before do
-        @data.delete :id
-        @trigger = LivePaper::WmTrigger.new @data
+        data.delete :id
+        @trigger = LivePaper::WmTrigger.new data
       end
 
       it 'should make a POST to the trigger URL with body.' do
@@ -39,7 +69,8 @@ describe LivePaper::WmTrigger do
           trigger: {
             name: 'name',
             type: 'watermark',
-            subscription: {package: 'month'}
+            startDate: start_date,
+            endDate: end_date
           }
         }.to_json
       end
@@ -47,14 +78,16 @@ describe LivePaper::WmTrigger do
 
     context 'when we do not have all needed data,' do
       it 'should raise exception if the name is no provided.' do
-        @data.delete :name
-        trigger = LivePaper::WmTrigger.new @data
+        data.delete :name
+        trigger = LivePaper::WmTrigger.new data
         expect { trigger.save }.to raise_error
       end
     end
   end
 
   describe '#parse' do
+    let(:lpp_start_date_response_json) { JSON.parse(lpp_trigger_response_json)['trigger']['startDate'] }
+    let(:lpp_end_date_response_json) { JSON.parse(lpp_trigger_response_json)['trigger']['endDate'] }
     before do
       @trigger = LivePaper::WmTrigger.parse(lpp_trigger_response_json)
     end
@@ -70,13 +103,20 @@ describe LivePaper::WmTrigger do
       expect(@trigger.name).to eq 'name'
     end
 
-    it 'should map the subscription attribute.' do
-      expect(@trigger.subscription).to eq 'subscription'
+    it 'should map the start_date attribute.' do
+      expect(@trigger.start_date).to eq lpp_start_date_response_json
+    end
+
+    it 'should map the end_date attribute.' do
+      expect(@trigger.end_date).to eq lpp_end_date_response_json
     end
   end
 
   describe '.get' do
     context 'the requested trigger exists.' do
+      let(:lpp_start_date_response_json) { JSON.parse(lpp_trigger_response_json)['trigger']['startDate'] }
+      let(:lpp_end_date_response_json) { JSON.parse(lpp_trigger_response_json)['trigger']['endDate'] }
+      
       before do
         @trigger = LivePaper::Trigger.get('trigger_id')
       end
@@ -85,7 +125,8 @@ describe LivePaper::WmTrigger do
         expect(@trigger.id).to eq 'trigger_id'
         expect(@trigger.name).to eq 'name'
         expect(@trigger.class).to eq LivePaper::WmTrigger
-        expect(@trigger.subscription).to eq 'subscription'
+        expect(@trigger.start_date).to eq lpp_start_date_response_json
+        expect(@trigger.end_date).to eq lpp_end_date_response_json
       end
 
       context 'qr trigger' do
@@ -126,7 +167,7 @@ describe LivePaper::WmTrigger do
 
     before do
       stub_request(:get, "https://fileapi/id/image?imageUrl=#{encoded_image_url}&resolution=#{resolution}&strength=#{strength}").to_return(:body => lpp_watermark_response, :status => 200)
-      @trigger = LivePaper::WmTrigger.new @data
+      @trigger = LivePaper::WmTrigger.new data
       @trigger.wm_url='https://fileapi/id/image'
     end
     

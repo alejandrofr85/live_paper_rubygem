@@ -71,7 +71,8 @@ def lpp_trigger_response_json(type='watermark')
     "state": "ACTIVE",
     "type": "#{type}",
     "watermark": "watermark",
-    "subscription": "subscription"
+    "startDate":"2014-10-08T20:40:26.376+0000",
+    "endDate":"2015-10-09T02:29:12.376+0000"
   }
 }
   RESPONSE

@@ -4,8 +4,6 @@ module LivePaper
   class ShortTrigger < Trigger
     attr_accessor :short_url
 
-    DEFAULT_SUBSCRIPTION = :month
-
     def parse(data)
       data = JSON.parse(data, symbolize_names: true)[:trigger]
       assign_attributes data
@@ -19,9 +17,8 @@ module LivePaper
         trigger: {
           name: @name,
           type: "shorturl",
-          subscription: {
-            package: DEFAULT_SUBSCRIPTION.to_s
-          }
+          startDate: @start_date || default_start_date,
+          endDate: @end_date || default_end_date
         }
       }
     end
