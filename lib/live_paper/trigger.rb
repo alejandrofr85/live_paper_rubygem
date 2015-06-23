@@ -34,12 +34,10 @@ module LivePaper
 
     def default_start_date
       Time.now.iso8601
-      "2014-10-08T20:40:26.376+0000"
     end
 
     def default_end_date
       Time.now.advance(years: 1).iso8601
-      "2015-10-09T02:29:12.376+0000"
     end
 
     private
