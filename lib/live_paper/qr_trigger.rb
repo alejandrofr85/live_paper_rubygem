@@ -4,8 +4,6 @@ module LivePaper
   class QrTrigger < Trigger
     attr_accessor :qrcode_url
 
-    DEFAULT_SUBSCRIPTION = :month
-
     def parse(data)
       data = JSON.parse(data, symbolize_names: true)[:trigger]
       assign_attributes data
@@ -24,9 +22,8 @@ module LivePaper
         trigger: {
           name: @name,
           type: "qrcode",
-          subscription: {
-            package: DEFAULT_SUBSCRIPTION.to_s
-          }
+          startDate: @start_date || default_start_date,
+          endDate: @end_date || default_end_date
         }
       }
     end

@@ -5,7 +5,6 @@ module LivePaper
     attr_accessor :wm_url
     WATERMARK_RESOLUTION = 75
     WATERMARK_STRENGTH = 10
-    DEFAULT_SUBSCRIPTION = :month
 
     def parse(data)
       data = JSON.parse(data, symbolize_names: true)[:trigger]
@@ -33,9 +32,8 @@ module LivePaper
         trigger: {
           name: @name,
           type: "watermark",
-          subscription: {
-            package: DEFAULT_SUBSCRIPTION.to_s
-          }
+          startDate: @start_date || default_start_date,
+          endDate: @end_date || default_end_date
         }
       }
     end
