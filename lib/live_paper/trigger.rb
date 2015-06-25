@@ -33,18 +33,18 @@ module LivePaper
     end
 
     def default_start_date
-      Time.now.iso8601
+      Time.now.to_s(:live_paper_date_format)
     end
 
     def default_end_date
-      Time.now.advance(years: 1).iso8601
+      Time.now.advance(years: 1).to_s(:live_paper_date_format)
     end
 
     private
     def validate_attributes!
       raise ArgumentError, 'Required Attributes needed: name' unless all_present? [@name]
     end
- 
+
     def update_body
       {
         trigger: {

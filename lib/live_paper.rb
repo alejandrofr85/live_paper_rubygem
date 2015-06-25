@@ -7,6 +7,7 @@ require "live_paper/wm_trigger"
 require "live_paper/qr_trigger"
 require "live_paper/short_trigger"
 require "live_paper/version"
+require "live_paper/time_formats"
 require 'base64'
 require 'rest-client'
 require 'json'
