@@ -14,7 +14,7 @@ require 'json'
 
 module LivePaper
 
-  LP_API_HOST="https://www.livepaperapi.com"
+  LP_API_HOST="https://dev.livepaperapi.com"
 
   def self.auth(auth_hash)
     LivePaperSession.new(auth_hash)

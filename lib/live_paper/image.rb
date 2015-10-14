@@ -6,7 +6,7 @@ module LivePaper
 
     attr_accessor :url
 
-    API_URL = 'https://storage.livepaperapi.com/objects/v1/files'
+    API_URL = 'https://dev.storage.livepaperapi.com/objects/v1/files'
 
     def self.upload(image_uri)
       # return the original img uri if it is LivePaper storage

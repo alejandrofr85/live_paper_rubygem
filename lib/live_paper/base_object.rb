@@ -6,7 +6,7 @@ end
 module LivePaper
   class BaseObject
 
-    LP_API_HOST="https://www.livepaperapi.com"
+    LP_API_HOST="https://dev.livepaperapi.com"
     AUTH_URL = "#{LP_API_HOST}/auth/token"
 
     attr_accessor :id, :name, :date_created, :date_modified, :link
