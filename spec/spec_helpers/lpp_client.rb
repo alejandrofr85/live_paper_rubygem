@@ -15,7 +15,8 @@ def lpp_payoff_response_json
   "payoff": {
     "id": "payoff_id",
     "name": "name",
-    "URL": "url"
+    "type": "url",
+    "url": "url"
   }
 }
   RESPONSE
@@ -27,6 +28,7 @@ def lpp_richpayoff_response_json
   "payoff": {
     "id": "payoff_id",
     "name": "name",
+    "type": "richPayoff",
     "dateCreated":"2014-10-07T20:57:01.083+0000",
     "dateModified":"2014-10-07T20:57:01.083+0000",
     "link":[
@@ -65,12 +67,11 @@ def lpp_trigger_response_json(type='watermark')
     "link": [
       {"rel":"self", "href": "https://www.livepaperapi.com/api/v1/triggers/trigger_id"},
       {"rel":"analytics", "href": "https://www.livepaperapi.com/analytics/v1/triggers/trigger_id"},
-      {"rel":"image", "href": "https://fileapi/trigger_id/image"},
+      {"rel":"download", "href": "https://fileapi/trigger_id/image"},
       {"rel":"shortURL", "href": "http://hpgo.co/abc123"}
     ],
     "state": "ACTIVE",
     "type": "#{type}",
-    "watermark": "watermark",
     "startDate":"2014-10-08T20:40:26.376+0000",
     "endDate":"2015-10-09T02:29:12.376+0000"
   }

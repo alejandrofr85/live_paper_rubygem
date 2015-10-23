@@ -7,7 +7,7 @@ module LivePaper
     def parse(data)
       data = JSON.parse(data, symbolize_names: true)[:trigger]
       assign_attributes data
-      self.qrcode_url=data[:link].select { |item| item[:rel] == "image" }.first[:href]
+      self.qrcode_url=data[:link].select { |item| item[:rel] == "download" }.first[:href]
       self
     end
 

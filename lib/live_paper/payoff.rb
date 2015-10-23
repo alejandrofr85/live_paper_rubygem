@@ -25,7 +25,7 @@ module LivePaper
     end
 
     def self.api_url
-      "#{LP_API_HOST}/api/v1/payoffs"
+      "#{LP_API_HOST}/api/v2/projects/#{$project_id}/payoffs"
     end
 
     private
@@ -44,7 +44,7 @@ module LivePaper
 
     def parse_webpayoff(data)
       @type = TYPE[:WEB]
-      @url = data[:URL]
+      @url = data[:url]
     end
 
     def update_body
@@ -67,13 +67,15 @@ module LivePaper
     def create_webpayoff_body
       {
         name: @name,
-        URL: @url
+        type: 'url',
+        url: @url
       }
     end
 
     def create_richpayoff_body
       {
         name: @name,
+        type: 'richPayoff',
         richPayoff: {
           version: 1,
           private: {

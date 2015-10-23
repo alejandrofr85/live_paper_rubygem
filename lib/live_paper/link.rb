@@ -20,7 +20,7 @@ module LivePaper
     end
 
     def self.api_url
-      "#{LP_API_HOST}/api/v1/links"
+      "#{LP_API_HOST}/api/v2/projects/#{$project_id}/links"
     end
 
     def self.list_key

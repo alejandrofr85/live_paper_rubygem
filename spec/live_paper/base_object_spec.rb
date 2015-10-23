@@ -22,7 +22,8 @@ describe LivePaper::BaseObject do
   before do
     stub_request(:post, /.*livepaperapi.com\/auth\/token.*/).to_return(:body => lpp_auth_response_json, :status => 200)
     stub_request(:post, api_url).to_return(:body => lpp_richpayoff_response_json, :status => 200)
-  end
+    stub_request(:post, LivePaper::BaseObject::AUTH_VALIDATION_URL).to_return(:status => 201, :body => "", :headers => { project_id: 'pid'})
+end
 
   describe '#initialize' do
     let(:data) {
@@ -373,10 +374,18 @@ describe LivePaper::BaseObject do
   end
 
   describe '.request_access_token' do
-    it 'should corerectly get the token' do
+    it 'should correctly get the token' do
       $lpp_access_token = nil
       LivePaper::BaseObject.request_access_token
       expect($lpp_access_token).to eq 'SECRETTOKEN'
+    end
+  end
+
+  describe '.request_project_id' do
+    it 'should correctly get the project id' do
+      $project_id = nil
+      LivePaper::BaseObject.request_project_id
+      expect($project_id).to eq 'pid'
     end
   end
 
@@ -395,6 +404,16 @@ describe LivePaper::BaseObject do
       end
     end
 
+    context 'when there is no project id' do
+      before do
+        $project_id = nil
+      end
+      it 'should request the project_id' do
+        expect(LivePaper::BaseObject).to receive(:request_project_id)
+        LivePaper::BaseObject.rest_request(api_url, :post)
+      end
+    end
+
     context 'when there is an access token' do
       before do
         $lpp_access_token = 'TOPSECRET'
@@ -407,6 +426,9 @@ describe LivePaper::BaseObject do
 
       context 'when the access token is invalid' do
         before do
+          allow(LivePaper::BaseObject).to receive(:request_project_id) do
+            @project_id = $project_id = 'pid'
+          end
           $lpp_access_token = 'invalid'
 
           @response = double('A mock for a response')
@@ -417,6 +439,38 @@ describe LivePaper::BaseObject do
 
         it 'should request access an token' do
           expect(LivePaper::BaseObject).to receive(:request_access_token).exactly(2).times
+          LivePaper::BaseObject.rest_request(api_url, :put, body: data.to_json)
+        end
+
+      end
+    end
+
+    context 'when there is a project id' do
+      before do
+        $lpp_access_token = 'TOPSECRET'
+        $project_id = 'mypid'
+      end
+
+      it 'should NOT call request_project_id' do
+        expect(LivePaper::BaseObject).to receive(:request_project_id).exactly(0).times
+        LivePaper::BaseObject.rest_request(api_url, :post)
+      end
+
+      context 'when the access token is invalid' do
+        before do
+          allow(LivePaper::BaseObject).to receive(:request_project_id) do
+            @project_id = $project_id = 'pid'
+          end
+          $lpp_access_token = 'invalid'
+
+          @response = double('A mock for a response')
+          allow(@response).to receive(:body) { '{ "accessToken" : "valid_access_token" }' }
+          @response.stub(:code).and_return(401, 401, 200) #fail first two calls
+          RestClient::Request.stub(:execute).and_return(@response)
+        end
+
+        it 'should request a project id' do
+          expect(LivePaper::BaseObject).to receive(:request_project_id).exactly(2).times
           LivePaper::BaseObject.rest_request(api_url, :put, body: data.to_json)
         end
 

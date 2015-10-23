@@ -24,6 +24,9 @@ module LivePaper
     def initialize(auth)
       #todo: tdd, verify hash
       $lpp_basic_auth = Base64.strict_encode64("#{auth[:id]}:#{auth[:secret]}")
+      BaseObject::request_access_token
+      BaseObject::request_project_id if $lpp_access_token
+
       @remote_resources={}
     end
 

@@ -8,6 +8,7 @@ module LivePaper
 
     LP_API_HOST="https://www.livepaperapi.com"
     AUTH_URL = "#{LP_API_HOST}/auth/token"
+    AUTH_VALIDATION_URL = "#{LP_API_HOST}/auth/v1/validate"
 
     attr_accessor :id, :name, :date_created, :date_modified, :link
 
@@ -101,6 +102,7 @@ module LivePaper
       raise "Method '#{verb}' not supported." unless [:get, :post, :put, :delete].include?(verb)
 
       request_access_token unless $lpp_access_token
+      request_project_id unless $project_id
       headers = {}
       headers[:authorization] = "Bearer #{$lpp_access_token}"
       headers[:accept] = options[:accept] || "application/json"
@@ -117,6 +119,7 @@ module LivePaper
         tries += 1
         if tries < 3
           request_access_token
+          request_project_id
           headers[:authorization] = "Bearer #{$lpp_access_token}"
           retry
         else
@@ -142,6 +145,20 @@ module LivePaper
       $lpp_access_token = @access_token
     end
 
+    def self.request_project_id
+      project = nil
+
+      RestClient.proxy = ENV['HTTP_PROXY'] || ENV['http_proxy']
+      request = {}.to_json
+      res = RestClient.post AUTH_VALIDATION_URL, request, { :Authorization => "Bearer #{$lpp_access_token}", :Accept => 'application/json'}
+      @project = res.headers[:project_id]
+
+      if @project.nil?
+        raise "Project id not in response header"
+      end
+
+      $project_id = @project
+    end
 
     def errors
       begin

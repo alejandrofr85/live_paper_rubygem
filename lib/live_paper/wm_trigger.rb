@@ -9,14 +9,14 @@ module LivePaper
     def parse(data)
       data = JSON.parse(data, symbolize_names: true)[:trigger]
       assign_attributes data
-      self.wm_url=data[:link].select { |item| item[:rel] == "image" }.first[:href]
+      self.wm_url=data[:link].select { |item| item[:rel] == "download" }.first[:href]
       self
     end
 
     def download_watermark(image_url, options = {})
       resolution = options[:resolution] || WATERMARK_RESOLUTION
       strength = options[:strength] || WATERMARK_STRENGTH
-      url = "#{self.wm_url}?imageUrl=#{CGI.escape(image_url)}&resolution=#{resolution}&strength=#{strength}"
+      url = "#{self.wm_url}?imageURL=#{CGI.escape(image_url)}&resolution=#{resolution}&strength=#{strength}"
       begin
         response = WmTrigger.rest_request( url, :get, accept: "image/jpg" )
         response.body.empty? ? nil : response.body

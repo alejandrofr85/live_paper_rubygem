@@ -6,7 +6,8 @@ describe LivePaper::Payoff do
     stub_request(:post, LivePaper::Payoff.api_url).to_return(:body => lpp_richpayoff_response_json, :status => 200)
     stub_request(:get, "#{LivePaper::Payoff.api_url}/payoff_id").to_return(:body => lpp_payoff_response_json, :status => 200)
     stub_request(:get, "#{LivePaper::Payoff.api_url}/payoff_not_existent").to_return(:body => '{}', :status => 404)
-  end
+    stub_request(:post, LivePaper::BaseObject::AUTH_VALIDATION_URL).to_return(:status => 201, :body => "", :headers => { project_id: 'pid'})
+end
 
   let(:data) {
     {
@@ -78,6 +79,7 @@ describe LivePaper::Payoff do
           assert_requested :post, LivePaper::Payoff.api_url, :body => {
                                   payoff: {
                                     name: 'name',
+                                    type: 'richPayoff',
                                     richPayoff: {
                                       version: 1,
                                       private: {
@@ -107,7 +109,8 @@ describe LivePaper::Payoff do
           assert_requested :post, LivePaper::Payoff.api_url, :body => {
                                   payoff: {
                                     name: data[:name],
-                                    URL: data[:url]
+                                    type: 'url',
+                                    url: data[:url]
                                   }
                                 }.to_json
         end
