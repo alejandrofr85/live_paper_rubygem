@@ -5,7 +5,6 @@ module LivePaper
     attr_accessor :wm_url
     WATERMARK_RESOLUTION = 75
     WATERMARK_STRENGTH = 10
-    ADJUST_IMAGE_LEVELS = false
 
     def parse(data)
       data = JSON.parse(data, symbolize_names: true)[:trigger]
@@ -17,9 +16,7 @@ module LivePaper
     def download_watermark(image_url, options = {})
       resolution = options[:resolution] || WATERMARK_RESOLUTION
       strength = options[:strength] || WATERMARK_STRENGTH
-      adjustImageLevels = (options[:adjustImageLevels].nil? ? ADJUST_IMAGE_LEVELS : options[:adjustImageLevels])
-      url = "#{self.wm_url}?imageUrl=#{CGI.escape(image_url)}&resolution=#{resolution}&strength=#{strength}&adjustImageLevels=#{adjustImageLevels}"
-      puts "URL=#{url}" if (!options[:showUrl].nil?)
+      url = "#{self.wm_url}?imageUrl=#{CGI.escape(image_url)}&resolution=#{resolution}&strength=#{strength}"
       begin
         response = WmTrigger.rest_request( url, :get, accept: "image/jpg" )
         response.body.empty? ? nil : response.body
