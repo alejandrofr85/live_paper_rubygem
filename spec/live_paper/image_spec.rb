@@ -6,10 +6,11 @@ describe LivePaper::Image do
   before do
     $lpp_access_token = "YouBeenHacked"
 
-    stub_request(:post, LivePaper::Image::API_URL).
+    stub_request(:post, LivePaper::Image::API_URL.gsub(/PROJECTID/,'pid')).
       with(:body => "YOURIMAGEBYTES",
-           :headers => {'Accept'=>'*/*; q=0.5, application/xml', 'Accept-Encoding'=>'gzip, deflate', 'Authorization'=>'Bearer YouBeenHacked', 'Content-Length'=>'14', 'Content-Type'=>'image/jpg', 'User-Agent'=>'Ruby'}).
+           :headers => {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip, deflate', 'Authorization'=>'Bearer YouBeenHacked', 'Content-Length'=>'14', 'Content-Type'=>'image/jpeg', 'User-Agent'=>'Ruby'}).
       to_return(:status => 201, :body => "", :headers => {location: lpp_img_uri})
+      stub_request(:post, LivePaper::BaseObject::AUTH_VALIDATION_URL).to_return(:status => 201, :body => "", :headers => { project_id: 'pid'})
   end
 
   context 'local file' do

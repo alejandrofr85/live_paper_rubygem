@@ -6,7 +6,7 @@ module LivePaper
 
     attr_accessor :url
 
-    API_URL = 'https://storage.livepaperapi.com/objects/v1/files'
+    API_URL = 'https://storage.livepaperapi.com/objects/v2/projects/PROJECTID/files'
 
     def self.upload(image_uri)
       # return the original img uri if it is LivePaper storage
@@ -21,10 +21,16 @@ module LivePaper
       end
 
       BaseObject.request_access_token unless $lpp_access_token
-      response = RestClient.post API_URL,
-                                 image_bytes,
-                                 authorization: "Bearer #{$lpp_access_token}",
-                                 content_type: 'image/jpg'
+      BaseObject.request_project_id unless $project_id
+      begin
+        response = RestClient.post API_URL.gsub(/PROJECTID/,$project_id),
+                                   image_bytes,
+                                   authorization: "Bearer #{$lpp_access_token}",
+                                   content_type: 'image/jpeg',
+                                   accept: '*/*'
+      rescue Exception => e
+        puts e.message
+      end
       response.headers[:location]
 
     end

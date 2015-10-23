@@ -19,10 +19,11 @@ describe LivePaper::WmTrigger do
     stub_request(:post, LivePaper::WmTrigger.api_url).to_return(:body => lpp_trigger_response_json, :status => 200)
     stub_request(:get, "#{LivePaper::WmTrigger.api_url}/trigger_id").to_return(:body => lpp_trigger_response_json, :status => 200)
     stub_request(:get, "#{LivePaper::WmTrigger.api_url}/trigger_not_existent").to_return(:body => '{}', :status => 404)
-  end
+    stub_request(:post, LivePaper::BaseObject::AUTH_VALIDATION_URL).to_return(:status => 201, :body => "", :headers => { project_id: 'pid'})
+end
 
   describe '#initialize without specifying start_date end_date' do
-    let(:data){ 
+    let(:data){
       {
         id: 'id',
         name: 'name'
@@ -116,7 +117,7 @@ describe LivePaper::WmTrigger do
     context 'the requested trigger exists.' do
       let(:lpp_start_date_response_json) { JSON.parse(lpp_trigger_response_json)['trigger']['startDate'] }
       let(:lpp_end_date_response_json) { JSON.parse(lpp_trigger_response_json)['trigger']['endDate'] }
-      
+
       before do
         @trigger = LivePaper::Trigger.get('trigger_id')
       end
@@ -166,11 +167,11 @@ describe LivePaper::WmTrigger do
     let(:strength) { LivePaper::WmTrigger::WATERMARK_STRENGTH }
 
     before do
-      stub_request(:get, "https://fileapi/id/image?imageUrl=#{encoded_image_url}&resolution=#{resolution}&strength=#{strength}").to_return(:body => lpp_watermark_response, :status => 200)
+      stub_request(:get, "https://fileapi/id/image?imageURL=#{encoded_image_url}&resolution=#{resolution}&strength=#{strength}").to_return(:body => lpp_watermark_response, :status => 200)
       @trigger = LivePaper::WmTrigger.new data
       @trigger.wm_url='https://fileapi/id/image'
     end
-    
+
     it 'should return the watermark image data.' do
       expect(@trigger.download_watermark(image_url)).to eq 'watermark_data'
     end

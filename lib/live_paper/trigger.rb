@@ -6,7 +6,7 @@ module LivePaper
     attr_accessor :state, :start_date, :end_date
 
     def self.api_url
-      "#{LP_API_HOST}/api/v1/triggers"
+      "#{LP_API_HOST}/api/v2/projects/#{$project_id}/triggers"
     end
 
     def self.item_key
