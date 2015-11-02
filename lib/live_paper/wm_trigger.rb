@@ -5,6 +5,7 @@ module LivePaper
     attr_accessor :wm_url
     WATERMARK_RESOLUTION = 75
     WATERMARK_STRENGTH = 10
+    DEFAULT_IMAGE_RESOLUTION = 72
 
     def parse(data)
       data = JSON.parse(data, symbolize_names: true)[:trigger]
@@ -16,7 +17,8 @@ module LivePaper
     def download_watermark(image_url, options = {})
       resolution = options[:resolution] || WATERMARK_RESOLUTION
       strength = options[:strength] || WATERMARK_STRENGTH
-      url = "#{self.wm_url}?imageURL=#{CGI.escape(image_url)}&resolution=#{resolution}&strength=#{strength}"
+      ppi = options[:ppi] || DEFAULT_IMAGE_RESOLUTION
+      url = "#{self.wm_url}?imageURL=#{CGI.escape(image_url)}&resolution=#{resolution}&ppi=#{ppi}&strength=#{strength}"
       begin
         response = WmTrigger.rest_request( url, :get, accept: "image/jpg" )
         response.body.empty? ? nil : response.body

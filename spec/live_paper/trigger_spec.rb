@@ -165,9 +165,10 @@ end
     let(:encoded_image_url) { CGI.escape(image_url) }
     let(:resolution) { LivePaper::WmTrigger::WATERMARK_RESOLUTION }
     let(:strength) { LivePaper::WmTrigger::WATERMARK_STRENGTH }
+    let(:ppi) { LivePaper::WmTrigger::DEFAULT_IMAGE_RESOLUTION }
 
     before do
-      stub_request(:get, "https://fileapi/id/image?imageURL=#{encoded_image_url}&resolution=#{resolution}&strength=#{strength}").to_return(:body => lpp_watermark_response, :status => 200)
+      stub_request(:get, "https://fileapi/id/image?imageURL=#{encoded_image_url}&resolution=#{resolution}&ppi=#{ppi}&strength=#{strength}").to_return(:body => lpp_watermark_response, :status => 200)
       @trigger = LivePaper::WmTrigger.new data
       @trigger.wm_url='https://fileapi/id/image'
     end
