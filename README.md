@@ -4,6 +4,16 @@ Provides a ruby interface to the Live Paper service by HP for creating watermark
 
 [![Gem Version](https://badge.fury.io/rb/live_paper.svg)](http://badge.fury.io/rb/live_paper)
 
+## Requirements
+
+ImageMagick or GraphicsMagick command-line tool has to be installed.  You can check if you have it installed by running
+```
+$ convert -version
+Version: ImageMagick 6.8.9-5 Q16 x86_64 2014-07-25 http://www.imagemagick.org
+Copyright: Copyright (C) 1999-2014 ImageMagick Studio LLC
+Features: DPC Modules
+Delegates: bzlib freetype jng jpeg ltdl lzma png xml zlib
+```
 
 ## Installation
 

@@ -1,4 +1,5 @@
 require_relative 'base_object'
+require 'mini_magick'
 
 module LivePaper
   class WmTrigger < Trigger
@@ -17,14 +18,22 @@ module LivePaper
     def download_watermark(image_url, options = {})
       resolution = options[:resolution] || WATERMARK_RESOLUTION
       strength = options[:strength] || WATERMARK_STRENGTH
-      ppi = options[:ppi] || DEFAULT_IMAGE_RESOLUTION
+      ppi = options[:ppi]
+      if ppi.blank?
+        image = MiniMagick::Image.open(image_url + "?access_token=" + $lpp_access_token)
+        ppiArray = image.resolution("PixelsPerInch") #This returns the [xResolution, yResolution]
+        ppi = ppiArray[0] if (ppiArray.present? && ppiArray.length > 0)
+      end
+      if ppi.blank?
+        ppi = DEFAULT_IMAGE_RESOLUTION
+      end
+      
       url = "#{self.wm_url}?imageURL=#{CGI.escape(image_url)}&resolution=#{resolution}&ppi=#{ppi}&strength=#{strength}"
       begin
         response = WmTrigger.rest_request( url, :get, accept: "image/jpg" )
         response.body.empty? ? nil : response.body
       rescue Exception => e
-        puts 'Exception!\n'
-        puts e.response
+        puts "Exception : #{e.to_s}\n"
       end
     end
 
