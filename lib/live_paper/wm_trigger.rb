@@ -16,7 +16,7 @@ module LivePaper
     end
 
     def download_watermark(image_url, options = {})
-      resolution = options[:resolution] || WATERMARK_RESOLUTION
+      wpi = options[:wpi] || WATERMARK_RESOLUTION
       strength = options[:strength] || WATERMARK_STRENGTH
       ppi = options[:ppi]
       if ppi.blank?
@@ -28,7 +28,7 @@ module LivePaper
         ppi = DEFAULT_IMAGE_RESOLUTION
       end
       
-      url = "#{self.wm_url}?imageURL=#{CGI.escape(image_url)}&resolution=#{resolution}&ppi=#{ppi}&strength=#{strength}"
+      url = "#{self.wm_url}?imageURL=#{CGI.escape(image_url)}&wpi=#{wpi}&ppi=#{ppi}&strength=#{strength}"
       begin
         response = WmTrigger.rest_request( url, :get, accept: "image/jpg" )
         response.body.empty? ? nil : response.body
