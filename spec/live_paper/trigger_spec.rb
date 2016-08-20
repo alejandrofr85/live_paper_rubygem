@@ -19,7 +19,7 @@ describe LivePaper::WmTrigger do
     stub_request(:post, LivePaper::WmTrigger.api_url).to_return(:body => lpp_trigger_response_json, :status => 200)
     stub_request(:get, "#{LivePaper::WmTrigger.api_url}/trigger_id").to_return(:body => lpp_trigger_response_json, :status => 200)
     stub_request(:get, "#{LivePaper::WmTrigger.api_url}/trigger_not_existent").to_return(:body => '{}', :status => 404)
-    stub_request(:post, LivePaper::BaseObject::AUTH_VALIDATION_URL).to_return(:status => 201, :body => "", :headers => { project_id: 'pid'})
+    stub_request(:post, LivePaper::BaseObject::LivePaper::Configuration.auth_validation_url).to_return(:status => 201, :body => "", :headers => { project_id: 'pid'})
 end
 
   describe '#initialize without specifying start_date end_date' do

@@ -1,4 +1,5 @@
 require 'json'
+# require_relative 'configuration'
 
 class NotAuthenticatedError < Exception
 end
@@ -6,9 +7,9 @@ end
 module LivePaper
   class BaseObject
 
-    LP_API_HOST="https://www.livepaperapi.com"
-    AUTH_URL = "#{LP_API_HOST}/auth/token"
-    AUTH_VALIDATION_URL = "#{LP_API_HOST}/auth/v1/validate"
+    # LP_API_HOST="https://www.livepaperapi.com"
+    # AUTH_URL = "#{LP_API_HOST}/auth/token"
+    # LivePaper::Configuration.auth_validation_url = "#{LP_API_HOST}/auth/v1/validate"
 
     attr_accessor :id, :name, :date_created, :date_modified, :link
 
@@ -131,7 +132,7 @@ module LivePaper
 
     def self.request_access_token
       h = { method: :post,
-            url: AUTH_URL,
+            url: LivePaper::Configuration.auth_url,
             headers: { authorization: "Basic #{$lpp_basic_auth}",
                        content_type: 'application/x-www-form-urlencoded',
                        accept: 'application/json' },
@@ -150,7 +151,7 @@ module LivePaper
 
       RestClient.proxy = ENV['HTTP_PROXY'] || ENV['http_proxy']
       request = {}.to_json
-      res = RestClient.post AUTH_VALIDATION_URL, request, { :Authorization => "Bearer #{$lpp_access_token}", :Accept => 'application/json'}
+      res = RestClient.post LivePaper::Configuration.auth_validation_url, request, { :Authorization => "Bearer #{$lpp_access_token}", :Accept => 'application/json'}
       @project = res.headers[:project_id]
 
       if @project.nil?

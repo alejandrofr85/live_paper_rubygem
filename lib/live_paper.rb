@@ -8,19 +8,25 @@ require "live_paper/qr_trigger"
 require "live_paper/short_trigger"
 require "live_paper/version"
 require "live_paper/time_formats"
+require "live_paper/configuration"
 require 'base64'
 require 'rest-client'
 require 'json'
 
 module LivePaper
 
-  LP_API_HOST="https://www.livepaperapi.com"
+  def self.setEnvironment(env)
+    LivePaper::Configuration.environment env
+  end
 
   def self.auth(auth_hash)
     LivePaperSession.new(auth_hash)
   end
 
   class LivePaperSession
+
+    attr_accessor :lpp_api_host
+
     def initialize(auth)
       #todo: tdd, verify hash
       $lpp_basic_auth = Base64.strict_encode64("#{auth[:id]}:#{auth[:secret]}")

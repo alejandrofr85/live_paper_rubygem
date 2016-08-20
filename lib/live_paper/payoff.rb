@@ -25,7 +25,7 @@ module LivePaper
     end
 
     def self.api_url
-      "#{LP_API_HOST}/api/v2/projects/#{$project_id}/payoffs"
+      "#{LivePaper::Configuration.lpp_api_host}/api/v2/projects/#{$project_id}/payoffs"
     end
 
     private

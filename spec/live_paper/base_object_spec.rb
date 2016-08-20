@@ -9,7 +9,7 @@ def stub_unimplemented_methods
 end
 
 describe LivePaper::BaseObject do
-  let(:api_url) { "#{LivePaper::LP_API_HOST}/v99/objects" }
+  let(:api_url) { "#{LivePaper::Configuration.lpp_api_host}/v99/objects" }
   let(:data) {
     {
       name: 'name',
@@ -22,7 +22,7 @@ describe LivePaper::BaseObject do
   before do
     stub_request(:post, /.*livepaperapi.com\/auth\/token.*/).to_return(:body => lpp_auth_response_json, :status => 200)
     stub_request(:post, api_url).to_return(:body => lpp_richpayoff_response_json, :status => 200)
-    stub_request(:post, LivePaper::BaseObject::AUTH_VALIDATION_URL).to_return(:status => 201, :body => "", :headers => { project_id: 'pid'})
+    stub_request(:post, LivePaper::BaseObject::LivePaper::Configuration.auth_validation_url).to_return(:status => 201, :body => "", :headers => { project_id: 'pid'})
 end
 
   describe '#initialize' do

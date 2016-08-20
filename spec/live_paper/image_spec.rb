@@ -10,7 +10,7 @@ describe LivePaper::Image do
       with(:body => "YOURIMAGEBYTES",
            :headers => {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip, deflate', 'Authorization'=>'Bearer YouBeenHacked', 'Content-Length'=>'14', 'Content-Type'=>'image/jpeg', 'User-Agent'=>'Ruby'}).
       to_return(:status => 201, :body => "", :headers => {location: lpp_img_uri})
-      stub_request(:post, LivePaper::BaseObject::AUTH_VALIDATION_URL).to_return(:status => 201, :body => "", :headers => { project_id: 'pid'})
+      stub_request(:post, LivePaper::BaseObject::LivePaper::Configuration.auth_validation_url).to_return(:status => 201, :body => "", :headers => { project_id: 'pid'})
   end
 
   context 'local file' do
