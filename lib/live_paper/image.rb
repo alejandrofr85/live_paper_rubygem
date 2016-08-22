@@ -8,7 +8,7 @@ module LivePaper
 
     API_URL = 'https://storage.livepaperapi.com/objects/v2/projects/PROJECTID/files'
 
-    def self.upload(image_uri)
+    def self.upload(image_uri, project_id=nil)
       # return the original img uri if it is LivePaper storage
       if image_uri.include? API_URL
         return image_uri
@@ -21,9 +21,12 @@ module LivePaper
       end
 
       BaseObject.request_access_token unless $lpp_access_token
-      BaseObject.request_project_id unless $project_id
+      if project_id.nil?
+        BaseObject.request_project_id unless $project_id
+        project_id = $project_id
+      end
       begin
-        response = RestClient.post API_URL.gsub(/PROJECTID/,$project_id),
+        response = RestClient.post API_URL.gsub(/PROJECTID/,project_id),
                                    image_bytes,
                                    authorization: "Bearer #{$lpp_access_token}",
                                    content_type: 'image/jpeg',

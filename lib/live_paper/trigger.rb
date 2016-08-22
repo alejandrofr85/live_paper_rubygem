@@ -5,8 +5,9 @@ module LivePaper
   class Trigger < BaseObject
     attr_accessor :state, :start_date, :end_date
 
-    def self.api_url
-      "#{LivePaper::Configuration.lpp_api_host}/api/v2/projects/#{$project_id}/triggers"
+    def self.api_url project_id=nil
+      project_id = $project_id if project_id.nil?
+      "#{LivePaper::Configuration.lpp_api_host}/api/v2/projects/#{project_id}/triggers"
     end
 
     def self.item_key

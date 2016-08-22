@@ -1,5 +1,5 @@
 require_relative 'base_object'
-
+require 'byebug'
 module LivePaper
   class Configuration
 
@@ -9,7 +9,14 @@ module LivePaper
 
     class << self
       attr_accessor :lpp_api_host
-      @lpp_api_host = LP_API_HOST
+
+      def lpp_api_host=(lpp_api_host)
+        @lpp_api_host = lpp_api_host
+      end
+
+      def lpp_api_host
+        @lpp_api_host || LP_API_HOST
+      end
 
       def auth_url
         "#{self.lpp_api_host}/auth/token"

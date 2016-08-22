@@ -10,7 +10,7 @@ module LivePaper
     # LP_API_HOST="https://www.livepaperapi.com"
     # AUTH_URL = "#{LP_API_HOST}/auth/token"
     # LivePaper::Configuration.auth_validation_url = "#{LP_API_HOST}/auth/v1/validate"
-
+    attr_accessor :project_id
     attr_accessor :id, :name, :date_created, :date_modified, :link
 
     def assign_attributes(data)
@@ -20,7 +20,8 @@ module LivePaper
       end unless data.empty?
     end
 
-    def initialize(data={})
+    def initialize(data={}, project_id=nil)
+      self.project_id = project_id
       assign_attributes data
     end
 
@@ -31,14 +32,15 @@ module LivePaper
     def save
       validate_attributes!
       unless present? @id
-        response = BaseObject.rest_request( self.class.api_url, :post, body: create_body.to_json )
+        response = BaseObject.rest_request( self.class.api_url(self.project_id), :post, body: create_body.to_json )
         parse(response.body)
       end
       self
     end
 
-    def self.get(id)
-      response = rest_request( "#{api_url}/#{id}", :get )
+    def self.get(id, project_id=nil)
+      project_id = $project_id if project_id.nil?
+      response = rest_request( "#{api_url(project_id)}/#{id}", :get )
       case response.code
         when 200
           parse response.body
@@ -47,11 +49,12 @@ module LivePaper
       end
     end
 
-    def self.list
+    def self.list(project_id=nil)
       objects=[]
       # $lpp_access_token = 'force retry'
+      project_id = $project_id if project_id.nil?
 
-      response = rest_request( api_url, :get )
+      response = rest_request( api_url(project_id), :get )
       JSON.parse(response.body, symbolize_names: true)[list_key].each do |linkdata|
         objects << self.parse({item_key => linkdata}.to_json)
       end
@@ -61,7 +64,7 @@ module LivePaper
     def update
       response_code = 'Object Invalid'
       if self.id
-        response = BaseObject.rest_request( "#{self.class.api_url}/#{id}", :put, body: update_body.to_json )
+        response = BaseObject.rest_request( "#{self.class.api_url(self.project_id)}/#{id}", :put, body: update_body.to_json )
         response_code = case response.code
           when 200
             parse(response.body)
@@ -81,7 +84,7 @@ module LivePaper
 
     def delete
       if self.id
-        response = BaseObject.rest_request( "#{self.class.api_url}/#{id}", :delete )
+        response = BaseObject.rest_request( "#{self.class.api_url(self.project_id)}/#{id}", :delete )
         response_code = case response.code
           when 200
             '200 OK'
@@ -177,7 +180,7 @@ module LivePaper
       raise NotImplementedError
     end
 
-    def self.api_url
+    def self.api_url project_id=nil
       raise NotImplementedError
     end
 

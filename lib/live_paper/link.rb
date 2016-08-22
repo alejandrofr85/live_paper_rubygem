@@ -19,8 +19,9 @@ module LivePaper
       @trigger ||= LivePaper::WmTrigger.get @trigger_id
     end
 
-    def self.api_url
-      "#{LivePaper::Configuration.lpp_api_host}/api/v2/projects/#{$project_id}/links"
+    def self.api_url project_id = nil
+      project_id = $project_id if project_id.nil?
+      "#{LivePaper::Configuration.lpp_api_host}/api/v2/projects/#{project_id}/links"
     end
 
     def self.list_key

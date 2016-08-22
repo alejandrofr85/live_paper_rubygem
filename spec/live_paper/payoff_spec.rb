@@ -1,13 +1,17 @@
 require 'spec_helper'
 
 describe LivePaper::Payoff do
+
+  let(:project_id) { "my_project" }
+
   before do
+    $project_id = project_id
     stub_request(:post, /.*livepaperapi.com\/auth\/token.*/).to_return(:body => lpp_auth_response_json, :status => 200)
     stub_request(:post, LivePaper::Payoff.api_url).to_return(:body => lpp_richpayoff_response_json, :status => 200)
     stub_request(:get, "#{LivePaper::Payoff.api_url}/payoff_id").to_return(:body => lpp_payoff_response_json, :status => 200)
     stub_request(:get, "#{LivePaper::Payoff.api_url}/payoff_not_existent").to_return(:body => '{}', :status => 404)
     stub_request(:post, LivePaper::BaseObject::LivePaper::Configuration.auth_validation_url).to_return(:status => 201, :body => "", :headers => { project_id: 'pid'})
-end
+  end
 
   let(:data) {
     {

@@ -1,13 +1,16 @@
 require 'spec_helper'
 
 describe LivePaper::Link do
+
+  let(:project_id) { "my_project" }
+
   before do
     stub_request(:post, /.*livepaperapi.com\/auth\/token.*/).to_return(:body => lpp_auth_response_json, :status => 200)
     stub_request(:post, LivePaper::Link.api_url).to_return(:body => lpp_link_response_json, :status => 200)
     stub_request(:get, "#{LivePaper::Link.api_url}/link_id").to_return(:body => lpp_link_response_json, :status => 200)
     stub_request(:get, "#{LivePaper::Link.api_url}/link_not_existent").to_return(:body => '{}', :status => 404)
     stub_request(:post, LivePaper::BaseObject::LivePaper::Configuration.auth_validation_url).to_return(:status => 201, :body => "", :headers => { project_id: 'pid'})
-
+    $project_id = project_id
     @data = {
       id: 'id',
       name: 'name',

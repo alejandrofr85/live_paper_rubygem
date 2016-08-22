@@ -5,6 +5,7 @@ DOWNLOAD_URL = "https://watermark.livepaperapi.com/watermark/v1/triggers"
 describe LivePaper::WmTrigger do
   let(:start_date) { "my_start_date" }
   let(:end_date) { "my_end_date" }
+  let(:project_id) { "my_project" }
   let(:data) {
     {
       id: 'id',
@@ -15,6 +16,7 @@ describe LivePaper::WmTrigger do
   }
 
   before do
+    $project_id = project_id
     stub_request(:post, /.*livepaperapi.com\/auth\/token.*/).to_return(:body => lpp_auth_response_json, :status => 200)
     stub_request(:post, LivePaper::WmTrigger.api_url).to_return(:body => lpp_trigger_response_json, :status => 200)
     stub_request(:get, "#{LivePaper::WmTrigger.api_url}/trigger_id").to_return(:body => lpp_trigger_response_json, :status => 200)

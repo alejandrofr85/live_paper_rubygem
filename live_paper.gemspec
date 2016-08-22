@@ -18,7 +18,7 @@ Gem::Specification.new do |spec|
   spec.test_files    = spec.files.grep(%r{^(test|spec|features)/})
   spec.require_paths = ["lib"]
 
-  spec.add_dependency "activesupport"
+  spec.add_dependency "activesupport", ">= 4.2"
   spec.add_dependency "mini_magick"
   spec.add_runtime_dependency "rest-client"
 
@@ -28,4 +28,5 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "webmock"
   spec.add_development_dependency "codeclimate-test-reporter"
   spec.add_development_dependency "auto_tagger"
+  spec.add_development_dependency "byebug"
 end
