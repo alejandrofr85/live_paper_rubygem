@@ -1,5 +1,5 @@
 require_relative 'base_object'
-require 'active_support/time'
+require 'active_support/all'
 
 module LivePaper
   class Trigger < BaseObject
