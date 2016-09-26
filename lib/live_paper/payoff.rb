@@ -6,13 +6,21 @@ module LivePaper
 
     TYPE = {
       WEB: 'WEB_PAYOFF',
-      RICH: 'RICH_PAYOFF'
+      RICH: 'RICH_PAYOFF',
+      ADVANCED: 'ADVANCED'
     }
 
     def parse(data)
       data = JSON.parse(data, symbolize_names: true)[self.class.item_key]
       assign_attributes(data)
-      send(present?(data[:richPayoff]) ? :parse_richpayoff : :parse_webpayoff, data)
+      if present?(data[:richPayoff])
+        method = :parse_richpayoff
+      elsif data[:type] == "advanced"
+        method = :parse_advancedpayoff
+      else
+        method = :parse_webpayoff
+      end
+      send(method, data)
       self
     end
 
@@ -43,6 +51,13 @@ module LivePaper
       @data = JSON.parse(Base64.decode64(data[:private][:data]), symbolize_names: true) rescue nil
     end
 
+    def parse_advancedpayoff(data)
+      @type = TYPE[:ADVANCED]
+      @url = data[:url]
+      @name = data[:name]
+      @data = data[:data]
+    end
+
     def parse_webpayoff(data)
       @type = TYPE[:WEB]
       @url = data[:url]
@@ -59,6 +74,8 @@ module LivePaper
             create_webpayoff_body
           when TYPE[:RICH]
             create_richpayoff_body
+          when TYPE[:ADVANCED]
+            create_advancedpayoff_body
           else
             raise ArgumentError, 'Type unknown.'
         end
@@ -70,6 +87,16 @@ module LivePaper
         name: @name,
         type: 'url',
         url: @url
+      }
+    end
+
+    def create_advancedpayoff_body
+      {
+        name: @name,
+        type: 'advanced',
+        url: @url,
+        version: "1.0",
+        data: @data
       }
     end
 

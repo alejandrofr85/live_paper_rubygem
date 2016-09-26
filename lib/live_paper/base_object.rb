@@ -20,8 +20,7 @@ module LivePaper
       end unless data.empty?
     end
 
-    def initialize(data={}, project_id=nil)
-      self.project_id = project_id
+    def initialize(data={})
       assign_attributes data
     end
 
