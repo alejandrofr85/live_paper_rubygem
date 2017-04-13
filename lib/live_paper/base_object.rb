@@ -7,9 +7,6 @@ end
 module LivePaper
   class BaseObject
 
-    # LP_API_HOST="https://www.livepaperapi.com"
-    # AUTH_URL = "#{LP_API_HOST}/auth/token"
-    # LivePaper::Configuration.auth_validation_url = "#{LP_API_HOST}/auth/v1/validate"
     attr_accessor :project_id
     attr_accessor :id, :name, :date_created, :date_modified, :link
 
@@ -50,9 +47,7 @@ module LivePaper
 
     def self.list(project_id=nil)
       objects=[]
-      # $lpp_access_token = 'force retry'
       project_id = $project_id if project_id.nil?
-
       response = rest_request( api_url(project_id), :get )
       JSON.parse(response.body, symbolize_names: true)[list_key].each do |linkdata|
         objects << self.parse({item_key => linkdata}.to_json)

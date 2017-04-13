@@ -5,9 +5,9 @@ module LivePaper
     attr_accessor :type, :url, :data
 
     TYPE = {
-      WEB: 'WEB_PAYOFF',
-      RICH: 'RICH_PAYOFF',
-      ADVANCED: 'ADVANCED'
+      WEB: 'url',
+      RICH: 'richpayoff',
+      CUSTOM_DATA: 'customData'
     }
 
     def parse(data)
@@ -15,8 +15,8 @@ module LivePaper
       assign_attributes(data)
       if present?(data[:richPayoff])
         method = :parse_richpayoff
-      elsif data[:type] == "advanced"
-        method = :parse_advancedpayoff
+      elsif data[:type] == TYPE[:CUSTOM_DATA]
+        method = :parse_customdata_payoff
       else
         method = :parse_webpayoff
       end
@@ -45,21 +45,21 @@ module LivePaper
     end
 
     def parse_richpayoff(data)
-      data = data[:richPayoff]
-      @type = TYPE[:RICH]
-      @url = data[:public][:url]
-      @data = JSON.parse(Base64.decode64(data[:private][:data]), symbolize_names: true) rescue nil
+      rich_data = data[:richPayoff]
+      @type = data[:type]
+      @url = rich_data[:public][:url]
+      @data = JSON.parse(Base64.decode64(rich_data[:private][:data]), symbolize_names: true) rescue nil
     end
 
-    def parse_advancedpayoff(data)
-      @type = TYPE[:ADVANCED]
-      @url = data[:url]
+    def parse_customdata_payoff(data)
+      @type = data[:type]
+      @url = data[:public][:url]
       @name = data[:name]
-      @data = data[:data]
+      @data = data[:privateData][:data]
     end
 
     def parse_webpayoff(data)
-      @type = TYPE[:WEB]
+      @type = data[:type]
       @url = data[:url]
     end
 
@@ -74,8 +74,8 @@ module LivePaper
             create_webpayoff_body
           when TYPE[:RICH]
             create_richpayoff_body
-          when TYPE[:ADVANCED]
-            create_advancedpayoff_body
+          when TYPE[:CUSTOM_DATA]
+            create_customdata_payoff_body
           else
             raise ArgumentError, 'Type unknown.'
         end
@@ -85,25 +85,29 @@ module LivePaper
     def create_webpayoff_body
       {
         name: @name,
-        type: 'url',
+        type: TYPE[:WEB],
         url: @url
       }
     end
 
-    def create_advancedpayoff_body
+    def create_customdata_payoff_body
       {
         name: @name,
-        type: 'advanced',
-        url: @url,
-        version: "1.0",
-        data: @data
+        version: "2.0",
+        type: TYPE[:CUSTOM_DATA],
+        public: {
+          url: @url
+        },
+        privateData:{
+          data: @data
+        }
       }
     end
 
     def create_richpayoff_body
       {
         name: @name,
-        type: 'richPayoff',
+        type: TYPE[:RICH_PAYOFF],
         richPayoff: {
           version: 1,
           private: {
