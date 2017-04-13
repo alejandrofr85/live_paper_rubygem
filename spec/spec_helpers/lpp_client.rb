@@ -34,11 +34,11 @@ def lpp_richpayoff_response_json
     "link":[
       {
         "rel":"self",
-        "href":"/api/v1/payoffs/payoff_id"
+        "href":"/api/v2/payoffs/payoff_id"
       },
       {
         "rel":"analytics",
-        "href":"/analytics/v1/payoffs/payoff_id"
+        "href":"/analytics/v2/payoffs/payoff_id"
       }
     ],
     "richPayoff" : {
@@ -65,8 +65,8 @@ def lpp_trigger_response_json(type='watermark')
         "dateCreated": "2014-10-08T22:06:28.518+0000",
         "dateModified": "2014-10-08T22:06:28.518+0000",
     "link": [
-      {"rel":"self", "href": "https://www.livepaperapi.com/api/v1/triggers/trigger_id"},
-      {"rel":"analytics", "href": "https://www.livepaperapi.com/analytics/v1/triggers/trigger_id"},
+      {"rel":"self", "href": "https://www.livepaperapi.com/api/v2/triggers/trigger_id"},
+      {"rel":"analytics", "href": "https://www.livepaperapi.com/analytics/v2/triggers/trigger_id"},
       {"rel":"download", "href": "https://fileapi/trigger_id/image"},
       {"rel":"shortURL", "href": "http://hpgo.co/abc123"}
     ],
@@ -119,7 +119,7 @@ def lpp_delete_error_response
 { "associatedLinks": "1",
   "link": [{
       "rel": "associatedLinks",
-      "href": "https://dev.livepaperapi.com/api/v1/links?trigger=my_trigger_id"
+      "href": "https://dev.livepaperapi.com/api/v2/links?trigger=my_trigger_id"
   }],
   "error": {
       "title": "409 Conflict",

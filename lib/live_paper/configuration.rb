@@ -23,7 +23,7 @@ module LivePaper
       end
 
       def auth_validation_url
-        "#{self.lpp_api_host}/auth/v1/validate"
+        "#{self.lpp_api_host}/auth/v2/validate"
       end
 
       def environment env

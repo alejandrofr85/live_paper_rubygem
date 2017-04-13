@@ -230,8 +230,8 @@ end
         date_created: 'date_created',
         date_modified: 'date_modified',
         link: [
-          {:rel => "self", :href => "/api/v1/objects/obj_id"},
-          {:rel => "analytics", :href => "/analytics/v1/objects/obj_id"}
+          {:rel => "self", :href => "/api/v2/objects/obj_id"},
+          {:rel => "analytics", :href => "/analytics/v2/objects/obj_id"}
         ]
       }
     }
@@ -281,15 +281,15 @@ end
         date_created: 'date_created',
         date_modified: 'date_modified',
         link: [
-          {:rel => "self", :href => "/api/v1/payoffs/payoff_id"},
-          {:rel => "analytics", :href => "/analytics/v1/payoffs/payoff_id"}
+          {:rel => "self", :href => "/api/v2/payoffs/payoff_id"},
+          {:rel => "analytics", :href => "/analytics/v2/payoffs/payoff_id"}
         ]
       }
       @obj = LivePaper::BaseObject.create @data
     end
 
     it 'should return href for rel link' do
-      expect(@obj.rel('self')).to eq '/api/v1/payoffs/payoff_id'
+      expect(@obj.rel('self')).to eq '/api/v2/payoffs/payoff_id'
     end
 
     it 'should return nil for unknown rel link' do

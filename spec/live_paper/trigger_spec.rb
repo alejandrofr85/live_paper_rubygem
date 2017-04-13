@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-DOWNLOAD_URL = "https://watermark.livepaperapi.com/watermark/v1/triggers"
+DOWNLOAD_URL = "https://watermark.livepaperapi.com/watermark/v2/triggers"
 
 describe LivePaper::WmTrigger do
   let(:start_date) { "my_start_date" }
