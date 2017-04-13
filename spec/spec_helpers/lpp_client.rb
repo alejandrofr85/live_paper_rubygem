@@ -28,7 +28,7 @@ def lpp_richpayoff_response_json
   "payoff": {
     "id": "payoff_id",
     "name": "name",
-    "type": "richPayoff",
+    "type": "richpayoff",
     "dateCreated":"2014-10-07T20:57:01.083+0000",
     "dateModified":"2014-10-07T20:57:01.083+0000",
     "link":[

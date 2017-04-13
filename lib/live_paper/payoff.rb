@@ -107,7 +107,7 @@ module LivePaper
     def create_richpayoff_body
       {
         name: @name,
-        type: TYPE[:RICH_PAYOFF],
+        type: TYPE[:RICH],
         richPayoff: {
           version: 1,
           private: {

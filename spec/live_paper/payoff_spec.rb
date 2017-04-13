@@ -83,7 +83,7 @@ describe LivePaper::Payoff do
           assert_requested :post, LivePaper::Payoff.api_url, :body => {
                                   payoff: {
                                     name: 'name',
-                                    type: 'richPayoff',
+                                    type: 'richpayoff',
                                     richPayoff: {
                                       version: 1,
                                       private: {
